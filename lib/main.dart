@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rondines/provider/provider.dart';
 import 'package:rondines/screen/Login_screen.dart';
+import 'package:rondines/screen/menu_screen.dart';
 
 void main() {
   runApp( Myapp());
@@ -30,12 +31,10 @@ class Myapp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title:'SegSer',
-      initialRoute: 'modulos',
+      initialRoute: 'login',
       routes: {
         'login':( _ )=>LoginScreen(),
-        
-        
-        
+        'menu':( _ )=>MenuScreen()
         
       },
       theme:ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.grey[300]),

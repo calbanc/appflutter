@@ -41,6 +41,9 @@ dependencies:
   path_provider: ^2.0.14
   provider: ^6.0.5
   shared_preferences: ^2.1.2
+  easy_sidemenu: ^0.5.0
+  quickalert: ^1.0.2
+  sidebarx: ^0.16.3
 
 dev_dependencies:
   flutter_test:

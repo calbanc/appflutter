@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:rondines/provider/LoginProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +39,7 @@ class LoginScreen extends StatelessWidget {
                   ]
                 )
             ),
-            SizedBox(height: 300,)
+            const SizedBox(height: 300,)
                 ],
               )
             )
@@ -90,7 +91,7 @@ class _LoginForm extends StatelessWidget {
                     : null;
               },
             ),
-            SizedBox(height: 18,),
+            const SizedBox(height: 18,),
             MaterialButton(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)
@@ -118,13 +119,16 @@ class _LoginForm extends StatelessWidget {
                 http.Response respuesta=await loginForm.login(usuario, clave);
 
                 if(respuesta.statusCode!=200){
-                  String mensaje='Porfavor revise su conexion';
-                  NotificationsService.showSnackbar(mensaje);
-                  loginForm.isLoading=false;
+                //  String mensaje='Porfavor revise su conexion';
+                loginForm.isLoading=false;
+                  QuickAlert.show(context: context,
+                   type: QuickAlertType.error,
+                   title: 'Login Error',
+                   text:'Estimado usuario password incorrecto'                   
+                  );
                 }else{
-                  
-
-                    Navigator.pushReplacementNamed(context, 'modulos');
+                  loginForm.isLoading=false;
+                  Navigator.pushReplacementNamed(context, 'menu');
                     
                    
                 }

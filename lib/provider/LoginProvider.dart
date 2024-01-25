@@ -27,7 +27,7 @@ class LoginProvider extends ChangeNotifier{
 
 
   Future<http.Response>login(String idusuario,String pass)async{
-    const String _endpoint = '/api/user/logindevsoft';
+    const String _endpoint = '/api/login';
       final Map<String, dynamic> data = {'USERNAME': idusuario, 'PASSWORD': pass};
       final url = Uri.https(_baseUrl, _endpoint);
       String parametros = json.encode(data);
