@@ -1,205 +1,397 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sidebarx/sidebarx.dart';
-
+import 'package:provider/provider.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:rondines/provider/provider.dart';
+import 'package:rondines/screen/RenovarTokenScreen.dart';
+import 'package:rondines/ui/general.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatelessWidget {
-  
-  
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
-  final _key = GlobalKey<ScaffoldState>();
+  final idrole;
+  final idclient;
+  const   MenuScreen({super.key,required this.idrole,required this.idclient});
+
   @override
   Widget build(BuildContext context) {
+      return ChangeNotifierProvider(
+        create: (_)=>MenuProvider(),
+        child: _MenuScreen(idrole: this.idrole,idclient: this.idclient,),
+    );
+  }
+}
+
+class _MenuScreen extends StatelessWidget {
+  final idrole;
+  final idclient;
+  const _MenuScreen({super.key,required this.idrole,required this.idclient});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider=Provider.of<MenuProvider>(context);
+    final Future<SharedPreferences> shared_preferences = SharedPreferences.getInstance();
     return Scaffold(
-      body: Builder(
-        builder: (context) {
-          final isSmallScreen = MediaQuery.of(context).size.width < 600;
-          return Scaffold(
-            key: _key,
-            appBar: isSmallScreen
-                ? AppBar(
-                    backgroundColor: Colors.white,
-                    title: Text(_getTitleByIndex(_controller.selectedIndex)),
-                    leading: IconButton(
-                      onPressed: () {
-                      
-                        _key.currentState?.openDrawer();
-                      },
-                      icon: const Icon(Icons.menu),
-                    ),
-                  )
-                : null,
-            drawer: ExampleSidebarX(controller: _controller),
-            body: Row(
+      appBar: AppBar(
+        title: FutureBuilder(
+          future: general().getdateofexpiredtoken(),
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              DateTime tiempo=snapshot.data!;
+              return Text('Tu sesion expira : $tiempo',style: TextStyle(fontSize: 10,fontStyle: FontStyle.italic,color: Colors.blue,fontWeight: FontWeight.bold),);
+            }else{
+              return Text('');
+            }
+          },
+        ),
+        actions: [
+          Padding(
+            padding:const EdgeInsets.all(8),
+            child: IconButton(
+              color: Colors.blue,
+              onPressed: (){
+
+
+            Navigator.push(context, PageRouteBuilder(
+                pageBuilder: ( _, __ , ___ ) => RenovarTokenScreen(idrole: this.idrole,idclient: this.idclient,),
+                transitionDuration:const Duration( seconds: 3)
+            )
+            );
+              },
+              icon: const Icon(Icons.settings),
+            ),
+          ),
+        ],
+      ),
+      persistentFooterButtons: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          
+          child: MaterialButton(
+            onPressed: (){
+              QuickAlert.show(context: context,
+                type: QuickAlertType.confirm,
+                title: 'Cerrar Sesion',
+                text: 'Esta seguro de cerrar sesion',
+                
+                confirmBtnText: 'Cerrar',
+                cancelBtnText: 'Cancelar',
+                onConfirmBtnTap: ()async{
+                  Navigator.of(context, rootNavigator: true).pop();
+                   SharedPreferences prefs = await shared_preferences;    
+                   await prefs.clear();
+                   Navigator.pushReplacementNamed(context, 'login');
+                }
+               );
+            },
+            child:const Text('CERRAR SESION',style: TextStyle(color: Colors.red),),
+          ),
+        )
+      ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 30,
+            ),
+            
+             SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 90,
+              child: FutureBuilder(
+                future: general().getnamefromtoken(), 
+                builder:  (context, snapshot){
+              
+                  if(snapshot.hasData){
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('Hola..'+ snapshot.data!+' Bienvenido a SegSer App',textAlign: TextAlign.center,style: TextStyle(fontStyle: FontStyle.italic,fontSize: 20),),
+                      ),
+                    );
+                  }else{
+                    return const CupertinoActivityIndicator();
+                  }
+                } 
+              ),
+            ), 
+
+            idrole==1 || idrole==2 ?Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!isSmallScreen) ExampleSidebarX(controller: _controller),
-                Expanded(
-                  child: Center(
-                    child: _ScreensExample(
-                      controller: _controller,
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: 200,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'ronda');
+                        },
+
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.orangeAccent,
+                              elevation: 10,
+                              child: Column(
+
+                                children: [
+                                  const SizedBox(height: 20,),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: const FadeInImage(
+                                      width: 180,
+                                      height: 100,
+                                      image: AssetImage('assets/nfc.png'),
+                                      placeholder: AssetImage('assets/segser.png'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10,),
+                                  const Text('CONTROL DE RONDAS',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            )
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: 200,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'maincontrol');
+                        },
+
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              elevation: 10,
+                              color: Colors.indigo,
+                              child: Column(
+
+                                children: [
+                                  const SizedBox(height: 20,),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: const FadeInImage(
+                                      width: 180,
+                                      height: 100,
+                                      image: AssetImage('assets/checkin.png'),
+                                      placeholder: AssetImage('assets/segser.png'),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 10,),
+                                  const Text('CONTROL DE ACCESO',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            )
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: 200,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'asistenciatrabajadores');
+                        },
+
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.deepPurpleAccent,
+                              elevation: 10,
+                              child: Column(
+
+                                children: [
+                                  const SizedBox(height: 20,),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: const FadeInImage(
+                                      width: 180,
+                                      height: 100,
+                                      image: AssetImage('assets/asistencia.png'),
+                                      placeholder: AssetImage('assets/segser.png'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10,),
+                                  const Text('ASISTENCIA TRABAJADORES',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            )
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: 200,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'contratistas');
+                        },
+
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.deepPurpleAccent,
+                              elevation: 10,
+                              child: Column(
+
+                                children: [
+                                  const SizedBox(height: 20,),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: const FadeInImage(
+                                      width: 180,
+                                      height: 100,
+                                      image: AssetImage('assets/trabajadores.png'),
+                                      placeholder: AssetImage('assets/segser.png'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10,),
+                                  const Text('CONTRATISTAS',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            )
+                        ),
+                      ),
+                    ),
+
+                  ],
+                )
+
+
+
+
+            ],):Container(),
+
+
+            idrole==3 || idrole==1 ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Container(
+                width: MediaQuery.of(context).size.width*0.5,
+                height: 200,
+                child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'reporte');
+                        },
+                                    
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            color: Colors.green,
+                            elevation: 10,
+                            child: Column(
+                              
+                              children: [
+                                const SizedBox(height: 20,),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(60),
+                                   child: const FadeInImage(
+                                        width: 180,
+                                        height: 100,
+                                        image: AssetImage('assets/maps.png'),
+                                        placeholder: AssetImage('assets/segser.png'),
+                                      ),
+                                ),
+                                const SizedBox(height: 10,),
+                                const Text('REPORTE DE RONDAS',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                              ],
+                            ),
+                          )
+                        ),
+                      ),
+              ),
+                Container(
+                  width: MediaQuery.of(context).size.width*0.5,
+                  height: 200,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.pushNamed(context, 'informe');
+                    },
+
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Colors.green,
+                          elevation: 10,
+                          child: Column(
+
+                            children: [
+                              const SizedBox(height: 20,),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: const FadeInImage(
+                                  width: 180,
+                                  height: 100,
+                                  image: AssetImage('assets/report.png'),
+                                  placeholder: AssetImage('assets/segser.png'),
+                                ),
+                              ),
+                              const SizedBox(height: 10,),
+                              const Text('INFORME DE RONDAS',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                            ],
+                          ),
+                        )
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
-    
-    );
-  }
-}
-class ExampleSidebarX extends StatelessWidget {
-  const ExampleSidebarX({
-    Key? key,
-    required SidebarXController controller,
-  })  : _controller = controller,
-        super(key: key);
+              
+            ],) :Container(),
 
-  final SidebarXController _controller;
+        idrole==3 || idrole==1 ? Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width*0.5,
+              height: 200,
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, 'reportetrabajadores');
+                },
 
-  @override
-  Widget build(BuildContext context) {
-    return SidebarX(
-      controller: _controller,
-      theme: SidebarXTheme(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: canvasColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        hoverColor: scaffoldBackgroundColor,
-        textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        selectedTextStyle: const TextStyle(color: Colors.white),  
-        itemTextPadding: const EdgeInsets.only(left: 30),
-        selectedItemTextPadding: const EdgeInsets.only(left: 30),
-        itemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
-        ),
-        selectedItemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: actionColor.withOpacity(0.37),
-          ),
-          gradient: const LinearGradient(
-            colors: [accentCanvasColor, canvasColor], 
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.28),
-              blurRadius: 30,
-            )
-          ],
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white.withOpacity(0.7),
-          size: 20,
-        ),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
-      extendedTheme: const SidebarXTheme(
-        width: 200,
-        decoration: BoxDecoration(
-          color: canvasColor,
-        ),
-      ),
-      footerDivider: divider,
-      headerBuilder: (context, extended) {
-        return SizedBox(
-          height: 100,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Image.asset('assets/segser.png'),
-          ),
-        );
-      },
-      items: [
-        SidebarXItem(
-          icon: Icons.security,
-          label: 'Ronda',
-          onTap: () {
-            debugPrint('Home');
-          },
-        ),
-        const SidebarXItem(
-          icon: Icons.people_alt,
-          label: 'Ingreso Personal',
-        ),
-      
-      ],
-    );
-  }
-}
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      color: Colors.green,
+                      elevation: 10,
+                      child: Column(
 
-class _ScreensExample extends StatelessWidget {
-  const _ScreensExample({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
-
-  final SidebarXController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        final pageTitle = _getTitleByIndex(controller.selectedIndex);
-        switch (controller.selectedIndex) {
-          case 0:
-            return ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              itemBuilder: (context, index) => Container(
-                height: 100,
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 10, right: 10, left: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).canvasColor,
-                  boxShadow: const [BoxShadow()],
+                        children: [
+                          const SizedBox(height: 20,),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: const FadeInImage(
+                              width: 180,
+                              height: 100,
+                              image: AssetImage('assets/report.png'),
+                              placeholder: AssetImage('assets/segser.png'),
+                            ),
+                          ),
+                          const SizedBox(height: 10,),
+                          const Text('INFORME INGRESO DE TRABAJADORES',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                        ],
+                      ),
+                    )
                 ),
               ),
-            );
-          default:
-            return Text(
-              pageTitle,
-              style: theme.textTheme.headlineSmall,
-            );
-        }
-      },
+            )
+          ],
+        ):Container(),
+        
+
+          ],
+        ),
+      ),
     );
   }
 }
-
-String _getTitleByIndex(int index) {
-  switch (index) {
-    case 0:
-      return 'Home';
-    case 1:
-      return 'Search';
-    case 2:
-      return 'People';
-    case 3:
-      return 'Favorites';
-    case 4:
-      return 'Custom iconWidget';
-    case 5:
-      return 'Profile';
-    case 6:
-      return 'Settings';
-    default:
-      return 'Not found page';
-  }
-}
-const primaryColor = Color(0xFF685BFF);
-const canvasColor = Color(0xFF2E2E48);
-const scaffoldBackgroundColor = Color(0xFF464667);
-const accentCanvasColor = Color(0xFF3E3E61);
-const white = Colors.white;
-final actionColor = const Color(0xFF5F5FA7).withOpacity(0.6);
-final divider = Divider(color: white.withOpacity(0.3), height: 1);

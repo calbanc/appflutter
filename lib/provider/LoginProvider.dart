@@ -5,6 +5,8 @@ import 'package:rondines/response/LoginResponse.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../ui/general.dart';
 class LoginProvider extends ChangeNotifier{
   
   final String _baseUrl = "api.seguridadsegser.com";  
@@ -14,7 +16,7 @@ class LoginProvider extends ChangeNotifier{
   String PASSWORD='';
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
+  
   
   set isLoading(bool value) {
     _isLoading = value;
@@ -35,7 +37,58 @@ class LoginProvider extends ChangeNotifier{
       return response;
   }
 
+  Future<http.Response>getpoints()async{
+    int idcompany=await general().getidcompanyfromtoken();
+    String _endpoint="/api/point/getpointbycompany";
 
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+
+    final String? token=prefs.getString('token');
+
+    final Map<String,dynamic> data={'IDCOMPANY':idcompany};
+    String parametros=json.encode(data);
+
+
+
+
+
+    final url = Uri.https(general().baseUrl, _endpoint);
+
+    Map<String, String> header = new Map();
+    header["content-type"] =  "application/x-www-form-urlencoded";
+    header["Auth"] =  token!;
+    final response = await http.post(url, body: {"json":parametros},headers: {"Auth": token!});
+
+    return response;
+
+  }
+  Future<http.Response>gettypeguard()async{
+    int idcompany=await general().getidcompanyfromtoken();
+    String _endpoint="/api/typeguard/gettypeguardsbycompany";
+
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+
+    final String? token=prefs.getString('token');
+
+    final Map<String,dynamic> data={'IDCOMPANY':idcompany};
+    String parametros=json.encode(data);
+
+
+
+
+
+    final url = Uri.https(general().baseUrl, _endpoint);
+
+    Map<String, String> header = new Map();
+    header["content-type"] =  "application/x-www-form-urlencoded";
+    header["Auth"] =  token!;
+    final response = await http.post(url, body: {"json":parametros},headers: {"Auth": token!});
+
+    return response;
+
+  }
 
 
 }

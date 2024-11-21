@@ -29,7 +29,7 @@ class _HeaderIcon extends StatelessWidget {
       child: Container(
         width: double.infinity,
         margin: EdgeInsets.only(top: 40),
-        child: Image(image: AssetImage('assets/segser.png'),height: 180,width: 100,) ,
+        child: Image(image: AssetImage('assets/segserlogo.png'),height: 180,width: 100,) ,
       ),
     );
   }

@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:rondines/provider/LoginProvider.dart';
+import 'package:rondines/provider/db_provider.dart';
+import 'package:rondines/response/response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:http/http.dart' as http;
@@ -100,9 +103,9 @@ class _LoginForm extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 100,vertical: 20),
                   child: loginForm.isLoading ? SizedBox(
-                    height: 50,
+                    //height: 50,
                     width: 50,
-                    child: CircularProgressIndicator(),
+                    child: CupertinoActivityIndicator(),
                   ) : FittedBox(
                     fit: BoxFit.fill,
                     child: Text('INGRESAR',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
@@ -120,6 +123,10 @@ class _LoginForm extends StatelessWidget {
 
                 if(respuesta.statusCode!=200){
                 //  String mensaje='Porfavor revise su conexion';
+
+              
+
+
                 loginForm.isLoading=false;
                   QuickAlert.show(context: context,
                    type: QuickAlertType.error,
@@ -127,8 +134,34 @@ class _LoginForm extends StatelessWidget {
                    text:'Estimado usuario password incorrecto'                   
                   );
                 }else{
-                  loginForm.isLoading=false;
-                  Navigator.pushReplacementNamed(context, 'menu');
+                    final respueslogin=LoginResponse.fromJson(respuesta.body);
+                  String token=respueslogin.token;
+                  final SharedPreferences prefs = await shared_preferences;
+                  prefs.setString('token', token!);
+
+
+                  final http.Response respuestapoint=await loginForm.getpoints();
+                  if(respuestapoint.statusCode==200){
+                    final points=GetdatacodeResponse.fromJson(respuestapoint.body);
+                    List<Point>listapoints=points.point!;
+                    listapoints.forEach((element) async=> { 
+                      await DBProvider.db.insertpoint(element)
+                    });
+
+                  }
+                  final http.Response respuestatypeguard=await loginForm.gettypeguard();
+                  if(respuestatypeguard.statusCode==200){
+                    final tipoguardia=GettypeguardsbycompanyResponse.fromJson(respuestatypeguard.body);
+                    List<TipoGuard>listatipo=tipoguardia.tipoguard!;
+                    listatipo.forEach((element) async =>{
+                      await DBProvider.db.inserttypeguard(element)
+                    });
+                  }
+
+
+                    loginForm.isLoading=false;
+
+                  Navigator.pushReplacementNamed(context, 'token');
                     
                    
                 }
