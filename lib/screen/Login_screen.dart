@@ -80,13 +80,18 @@ class _LoginForm extends StatelessWidget {
             const SizedBox(height: 10,),
             TextFormField(
               autocorrect: false,
-              obscureText: true,
-              enableSuggestions: false,
+              obscureText: loginForm.oscureText,
               decoration: InputDecorations.authInputDecoration(
-                  hintext: 'Ingrese su clave',
-                  labeltext: 'Password',
-                  icono: Icons.logout
+                  hintext: 'Contraseña',
+                  labeltext: 'Contraseña',
+                  sufixiconobutton: IconButton(onPressed: (){
+
+                    loginForm.oscureText=!loginForm.oscureText;
+
+                  }, icon: const Icon(Icons.visibility_outlined))
               ),
+              enableSuggestions: false,
+
               onChanged: (value)=>loginForm.PASSWORD=value,
               validator: (value) {
                 return (value == null || value.isEmpty)

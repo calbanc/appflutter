@@ -41,6 +41,8 @@ class Guard {
     String? isok;
     String? idimage;
     String? typepoint;
+    String? punto;
+    String? tipo;
     String? sw_enviado;
 
     
@@ -57,6 +59,9 @@ class Guard {
         this.isok,
         this.idimage,
         this.typepoint,
+        this.punto,
+        this.tipo,
+
         this.sw_enviado
         
     });
@@ -78,6 +83,9 @@ class Guard {
         isok: json["ISOK"],
         idimage: json["IDIMAGE"],
         typepoint: json["TYPEPOINT"],
+        tipo:json["TIPO"],
+        punto: json["PUNTO"],
+
         sw_enviado: json["SW_ENVIADO"]
         
         

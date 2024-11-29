@@ -6,18 +6,19 @@ class InputDecorations {
     required String hintext,
     required String labeltext,
     IconData? icono,
+    IconButton? sufixiconobutton,
   }){
 
     return InputDecoration(
-       enabledBorder:UnderlineInputBorder(
+       enabledBorder:OutlineInputBorder(
         borderSide: BorderSide(
           color:Color.fromARGB(255, 76, 76, 76)
           ), 
       ),
-      focusedBorder:UnderlineInputBorder(
+      border:OutlineInputBorder(
         borderSide: BorderSide(
           color:Colors.black38,
-          width: 2
+          width: 1
         )
       ), 
       hintText:hintext,
@@ -25,7 +26,8 @@ class InputDecorations {
       labelStyle:TextStyle(
         color:Colors.black38
       ),
-      prefixIcon:icono!=null ? Icon(icono,color:Colors.black) : null
+
+      suffixIcon: sufixiconobutton!=null ? sufixiconobutton : null,
        
     );
   }

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
@@ -14,6 +16,7 @@ import 'package:rondines/response/response.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rondines/ui/general.dart';
+import 'package:share_plus/share_plus.dart';
 class RegistrControl extends StatelessWidget {
   const RegistrControl({super.key});
 
@@ -132,8 +135,10 @@ class RegistraControl extends StatelessWidget {
   }
     return Scaffold(
       appBar: AppBar(
-        title:const Text('Registra Ronda'),
+        backgroundColor: Colors.blueAccent,
+        title:const Text('Registra Ronda',style: TextStyle(color: Colors.white),),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Form(
         key: provider.formkey,
@@ -141,7 +146,8 @@ class RegistraControl extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-               Padding(
+              SizedBox(height: 20,),
+               /*Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
                 child: CupertinoButton(
                   color: Colors.blue,
@@ -149,18 +155,42 @@ class RegistraControl extends StatelessWidget {
                   onPressed: ()=>_showActionSheet(context)
                 ),
                 
-              ), 
+              ),*/
           
-              const SizedBox(height: 10,),
+
           
-              provider.imagepath=='' ? Center():Center(
-                          child: Image.file(
-                            File(provider.imagepath),
-                            width: MediaQuery.of(context).size.width*0.4,
-                            height: MediaQuery.of(context).size.height*0.4,
+              provider.imagepath=='' ? GestureDetector(
+                onTap: ()=>_showActionSheet(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height*0.4,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Click para tomar foto',style: TextStyle(fontSize: 20),),
+                        Icon(Icons.camera_enhance_outlined,size: 80,),
+                      ],
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blueAccent)
+
+                    ),
+                  ),
+                ),
+              ):Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Image.file(
+                              File(provider.imagepath),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height*0.4,
+                            ),
                           ),
                 ),
-          
+              const SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18,vertical: 4),
                 child: Center(
@@ -193,7 +223,10 @@ class RegistraControl extends StatelessWidget {
                               )),
                         );
                           }else{
-                               Future.microtask(() => {
+                            Fluttertoast.showToast(msg: 'Tarjeta NFC no registrada');
+                            Navigator.of(context).pop();
+
+                             /*  Future.microtask(() => {
                             QuickAlert.show(
                             context: context, 
                             type: QuickAlertType.error,
@@ -201,7 +234,7 @@ class RegistraControl extends StatelessWidget {
 
                           )
 
-                          });
+                          });*/
                           }
 
 
@@ -291,14 +324,13 @@ class RegistraControl extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18,vertical: 4),
                 child: TextFormField(
+                  controller: provider.observacionController,
                   validator: (value)  {
                        return (value == '' || value!.isEmpty )
                                   ? 'Debe ingresar una observacion'
                                   : null;
                   },
-                  onChanged: (value){
-                    provider.Observacion=value;
-                  },
+
                    decoration: InputDecoration(
                     errorText: 'Debe ingresar una observacion',
                     errorBorder: OutlineInputBorder(
@@ -320,145 +352,69 @@ class RegistraControl extends StatelessWidget {
                           ),
               ),
               const SizedBox(height: 10,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18),
-                child: CupertinoButton(
-                  
-                  borderRadius: BorderRadius.circular(36),
-                  color: Colors.green,
-                  child: provider.isloading ? CupertinoActivityIndicator() : Text('Guardar'),
-                  onPressed: ()async {
-                    FocusScope.of(context).requestFocus(FocusNode());
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18),
+                  child: CupertinoButton(
 
-                    if(!provider.isValidateForm() || provider.imagepath==''){
-                      
-                      QuickAlert.show(context: context, 
-                      type: QuickAlertType.warning,
-                      title: 'Faltan datos',
-                      text:'Estimado usuario valide datos, e imagen'
+                    borderRadius: BorderRadius.circular(36),
+                    color: Colors.green,
+                    child: provider.isloading ? CupertinoActivityIndicator() : Text('Guardar'),
+                    onPressed: ()async {
+                      FocusScope.of(context).requestFocus(FocusNode());
 
-                      );
-                      return;
-                    };
+                      if(!provider.isValidateForm() || provider.imagepath==''){
 
-                    bool conectado=await general().isOnlineNet();
+                        QuickAlert.show(context: context,
+                        type: QuickAlertType.warning,
+                        title: 'Faltan datos',
+                        text:'Estimado usuario valide datos, e imagen'
 
-                    if(conectado){
-                       showDialog(context: context, builder: ((context) {
-                      return  CupertinoAlertDialog(
-                        content: Column(children: const [
-                          CupertinoActivityIndicator(),
-                          Text('Registrando imagen'),
-                        ],),
-                      );
-                    }));
-
-                    provider.isloading=true;
-                    await _getCurrentPosition();
-                    provider.tipo=tipo;
-
-                    String fecha=DateFormat('dd/MM/yyyy').format(DateTime.now());
-                    String hora=DateFormat('HH:mm:ss').format(DateTime.now());
-                    String nombrefoto=fecha.replaceAll("/", "")+hora.replaceAll(":", "");
-                    provider.imagename=nombrefoto;
-                    http.Response respuesta=await provider.uploadImage(provider.imagepath, nombrefoto);
-                    if(respuesta.statusCode==200){
-                      Navigator.of(context, rootNavigator: true).pop();
-
-                      //enviamos los datos
-                       showDialog(context: context, builder: ((context) {
-                      return  CupertinoAlertDialog(
-                        content: Column(children: const [
-                          CupertinoActivityIndicator(),
-                          Text('Registrando datos'),
-                        ],),
-                      );
-                    }));
-                      http.Response respuestadatos=await provider.save(provider);
-                      if(respuestadatos.statusCode==200){
+                        );
+                        return;
+                      };
 
 
-                        provider.isloading=false;
-                        provider.imagepath='';
-                        Navigator.of(context, rootNavigator: true).pop();
+                        await _getCurrentPosition();
+                        final iduser=await general().getiduserfromtoken();
+                        String date=DateFormat('yyyy-MM-dd').format(DateTime.now());
+                        String time=DateFormat('HH:mm:ss').format(DateTime.now());
+                        provider.Observacion=provider.observacionController.text;
+                        Guard guardia= Guard(
+                          iduser: iduser,
+                          idtypeguar: provider.idtipoguard,
+                          date:date,
+                          time: time,
+                          lat:provider.position.latitude.toString(),
+                          longi: provider.position.longitude.toString(),
+                          idpoint: provider.idpoint,
+                          observacion: provider.Observacion,
+                          isok: provider.cumple=='Si' ? '1' : '0',
+                          idimage: provider.imagepath,
+                          typepoint: tipo,
+                          sw_enviado: "0"
+                        );
+
+                          final res=await DBProvider.db.insertguard(guardia);
+
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Datos registrados correctamente',style: TextStyle(color: Colors.white),),
+                            content: Text('Datos registrados correctamente localmente ',style: TextStyle(color: Colors.white),),
                             backgroundColor: Colors.green,
-                            ),
-                    );
-                        Navigator.pushReplacementNamed(context, 'ronda');
+                          ),
+                        );
+                        provider.getguardsavailable();
+                        provider.formkey.currentState!.reset();
+                        await Share.shareXFiles([XFile(provider.imagepath)],text: provider.Observacion);
+                        Navigator.of(context).pop();
 
-                      }else{
-                        provider.isloading=false;
-                         QuickAlert.show(
-                        context: context,
-                        type: QuickAlertType.error,
-                        title: 'Error ',
-                        text: 'Error enviando datos'
-                      );
-                      }
-
-
-
-
-
-                    }else{
-                      provider.isloading=false;
-                       QuickAlert.show(
-                        context: context,
-                        type: QuickAlertType.error,
-                        title: 'Error ',
-                        text: 'Error enviando imagen'
-                      );
-                    }
-                    }else{
-                      await _getCurrentPosition();
-                      final iduser=await general().getiduserfromtoken();
-                      String date=DateFormat('yyyy-MM-dd').format(DateTime.now());
-                      String time=DateFormat('HH:mm:ss').format(DateTime.now());
-                      Guard guardia= Guard(
-                        iduser: iduser,
-                        idtypeguar: provider.idtipoguard,
-                        date:date,
-                        time: time,
-                        lat:provider.position.latitude.toString(),
-                        longi: provider.position.longitude.toString(),
-                        idpoint: provider.idpoint,
-                        observacion: provider.Observacion,
-                        isok: provider.cumple=='Si' ? '1' : '0',
-                        idimage: provider.imagepath,
-                        typepoint: tipo,
-                        sw_enviado: "0"
-                      );
-                        print(guardia);
-                        final res=await DBProvider.db.insertguard(guardia);
-                        print(res);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Datos registrados correctamente localmente ',style: TextStyle(color: Colors.white),),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.pushReplacementNamed(context, 'ronda');
-
-
-
-                    }
-
-
-                    
-
-
-
-
-
-
-
-                  },
+                    },
+                  ),
                 ),
-              )
+              ),
+              SizedBox(height: 20,)
               
           
               

@@ -16,7 +16,14 @@ class LoginProvider extends ChangeNotifier{
   String PASSWORD='';
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  
+  bool _oscureText=true;
+
+  bool get oscureText=>_oscureText;
+
+  set oscureText(value){
+    _oscureText=value;
+    notifyListeners();
+  }
   
   set isLoading(bool value) {
     _isLoading = value;

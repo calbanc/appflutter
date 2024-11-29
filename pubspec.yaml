@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  connectivity_plus: ^5.0.1
+  connectivity_plus: ^6.0.1
   cupertino_icons: ^1.0.2
   dropdown_search: ^5.0.6
   easy_sidemenu: ^0.5.0
@@ -59,6 +59,9 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   excel: ^4.0.2
   share_plus: ^7.2.1
+  fluttertoast: ^8.2.8
+  internet_connection_checker_plus: ^2.5.2
+  material_segmented_control: ^5.0.1
 
 dev_dependencies:
   flutter_lints: ^2.0.0
@@ -88,7 +91,17 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: PoppinsR
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+    - family: PoppinsB
+      fonts:
+        - asset: assets/fonts/Poppins-Bold.ttf
+    - family: PoppinsL
+      fonts:
+        - asset: assets/fonts/Poppins-Light.ttf
+
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

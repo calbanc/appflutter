@@ -113,6 +113,13 @@ class DBProvider extends ChangeNotifier{
         idzone: res[index]['IDZONE']
     ));
   }
+
+  Future<int>udpatecomentario(int id,String comentario)async{
+    final db=await database;
+    final res=await db.update('GUARDS', {'OBSERVACION':comentario},where: 'id=?',whereArgs: [id]);
+    return res;
+  }
+
   Future<int>insertguard(Guard guardia)async{
     final db=await database;
     final res=await db.insert('GUARDS',guardia.toMap() );
@@ -128,11 +135,23 @@ class DBProvider extends ChangeNotifier{
 
 
   }
+  Future<int>deleteronda(int id)async{
+    final db=await database;
+    final res=await db.delete('GUARDS',where: "ID=?",whereArgs: [id]);
+    return res;
+  }
 
-  Future<List<Guard>>getguarddisponible()async{
+
+
+  Future<List<Guard>>getguardnodisponible()async{
     final db=await database;
     final List<Map<String,dynamic>>res=await db.rawQuery(
-        ''' SELECT * FROM GUARDS WHERE SW_ENVIADO= '0'  '''
+        ''' SELECT G.*, P.NAME AS 'PUNTO',TG.NAME AS 'TIPO'
+            FROM GUARDS G
+            INNER JOIN POINT P ON G.IDPOINT=P.ID
+            INNER JOIN TYPEGUARD TG ON TG.ID=G.IDTYPEGUAR
+            WHERE G.SW_ENVIADO='1'  
+            Order by ID DESC'''
 
     );
 
@@ -149,6 +168,42 @@ class DBProvider extends ChangeNotifier{
         isok: res[index]['ISOK'],
         idimage: res[index]['IDIMAGE'],
         typepoint: res[index]['TYPEPOINT'],
+        tipo: res[index]["TIPO"],
+        punto: res[index]["PUNTO"],
+        sw_enviado: res[index]['SW_ENVIADO']
+
+    ));
+
+  }
+
+
+  Future<List<Guard>>getguarddisponible()async{
+    final db=await database;
+    final List<Map<String,dynamic>>res=await db.rawQuery(
+        ''' SELECT G.*, P.NAME AS 'PUNTO',TG.NAME AS 'TIPO'
+            FROM GUARDS G
+            INNER JOIN POINT P ON G.IDPOINT=P.ID
+            INNER JOIN TYPEGUARD TG ON TG.ID=G.IDTYPEGUAR
+            WHERE G.SW_ENVIADO='0' 
+            Order by ID DESC '''
+
+    );
+
+    return List.generate(res.length, (index) => Guard(
+        id: res[index]['ID'],
+        iduser: res[index]['IDUSER'],
+        idtypeguar: res[index]['IDTYPEGUAR'],
+        date: res[index]['DATE'],
+        time: res[index]['TIME'],
+        lat: res[index]['LAT'],
+        longi: res[index]['LONGI'],
+        idpoint: res[index]['IDPOINT'],
+        observacion: res[index]['OBSERVACION'],
+        isok: res[index]['ISOK'],
+        idimage: res[index]['IDIMAGE'],
+        typepoint: res[index]['TYPEPOINT'],
+        tipo: res[index]["TIPO"],
+        punto: res[index]["PUNTO"],
         sw_enviado: res[index]['SW_ENVIADO']
 
     ));

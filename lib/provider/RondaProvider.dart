@@ -7,11 +7,19 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:rondines/provider/LoginProvider.dart';
+import 'package:rondines/provider/db_provider.dart';
 import 'package:rondines/response/guardResponse.dart';
 import 'package:rondines/ui/general.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../response/reportClientResponse.dart';
 class RondaProvider extends ChangeNotifier{
   GlobalKey<FormState> formkey = new GlobalKey<FormState>();
+  TextEditingController observacionController=TextEditingController(text: '');
+  TextEditingController observacioneditController=TextEditingController(text: '');
+  TextEditingController fechaController=TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
   bool _isscanning=false;
   String IDCOMPANY='';
   int idzona=0;
@@ -25,6 +33,21 @@ class RondaProvider extends ChangeNotifier{
   double longitud=0.0;
   String tipo='';
   String imagename='';
+
+  int _currentindex=1;
+  int _currentindexsegment=0;
+  int get currentindex=>_currentindex;
+  int get currentindexsegment=>_currentindexsegment;
+  set currentindexsegment(value){
+    value==0 ? getguardsavailable() :getguardsends();
+    _currentindexsegment=value;
+    notifyListeners();
+  }
+
+  set currentindex(value){
+    _currentindex=value;
+    notifyListeners();
+  }
 
   bool _isloading=false;
   bool get isloading=>_isloading;
@@ -66,11 +89,32 @@ set position(Position value){
     _isscanning=value;
     notifyListeners();
   }
+  List<Guard> _listaguards=[];
+  List<Guard> get listaguards=>_listaguards;
+  set listaguards(value){
+    _listaguards=value;
+    notifyListeners();
 
-  /* Future<http.Response>consultypeguards()async{
-    
-    
-  } */
+  }
+  List<Guard> _listaguardsends=[];
+  List<Guard> get listaguardsends=>_listaguardsends;
+  set listaguardsends(value){
+    _listaguardsends=value;
+    notifyListeners();
+
+  }
+  List<Report>_listareport=[];
+  List<Report>get listareport=>_listareport;
+  set listareport(value){
+    _listareport=value;
+    notifyListeners();
+  }
+  RondaProvider(){
+   getguardsavailable();
+    getguardsends();
+  }
+
+
   Future<http.Response>gettipoguard()async{
     String _endpoint="/api/typeguard/gettypeguardsbycompany";
 
@@ -132,6 +176,28 @@ set position(Position value){
     
     return response;
 
+  }
+
+  Future<http.Response>getguardsbyuser(String fecha)async{
+    String _endpoint="/api/guards/getguardsbyuser";
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final String? token=prefs.getString('token');
+    int usuario=await general().getiduserfromtoken();
+    final Map<String,dynamic> data={'IDUSER':usuario,
+      "FECHA":fecha,
+    };
+    String parametros=json.encode(data);
+
+
+    final url = Uri.https(general().baseUrl, _endpoint);
+
+    Map<String, String> header = new Map();
+    header["content-type"] =  "application/x-www-form-urlencoded";
+    header["Auth"] =  token!;
+    final response = await http.post(url, body: {"json":parametros},headers: {"Auth": token!});
+
+    return response;
   }
 
     Future<http.Response>save(RondaProvider provider)async{
@@ -207,25 +273,21 @@ set position(Position value){
 
   }
 
+  Future<http.Response>getpoints()async{
+
+    return await LoginProvider().getpoints();
+
+  }
+  Future<http.Response>gettypeguard()async{
+    return await LoginProvider().gettypeguard();
+  }
+  getguardsavailable()async{
+    listaguards=await DBProvider.db.getguarddisponible();
+  }
+  getguardsends()async{
+    listaguardsends=await DBProvider.db.getguardnodisponible();
+  }
+
 }
 
 
-  /* jsonObject.put("IDUSER",usuario);
-            jsonObject.put("IDTYPEGUAR",tipoguardia);
-            jsonObject.put("DATE",fecha);
-            jsonObject.put("TIME",hora);
-            jsonObject.put("IDPOINT",idpoint);
-            jsonObject.put("LAT",latitud);
-            jsonObject.put("LONG",longitud);
-            jsonObject.put("OBSERVATION",observacion);
-            jsonObject.put("ISOK",isok);
-            jsonObject.put("IDIMAGE",nombrefoto);
-            jsonObject.put("TYPEPOINT",tipo); 
-            
-              SimpleDateFormat ho=new SimpleDateFormat("HH:mm:ss");
-        String hora=ho.format(new Date());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:
-
-                 String url= Global.url+"guards/save";
-
-            */
