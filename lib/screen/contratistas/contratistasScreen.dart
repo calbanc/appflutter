@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_excel/excel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -29,6 +31,7 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
   TextEditingController observacionctrl = TextEditingController(text: '');
   List<List<Data?>> rosw = [];
   String qr = '';
+  int totaltrabajadores = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +40,9 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Registro de contratistas',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontFamily: 'PoppinsR'),
         ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -58,7 +62,27 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                           http.Response response = await controlAccesoProvider()
                               .getdatacontratista(barcodeScanRes);
 
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: ((context) {
+                                return const Center(
+                                  child: CupertinoAlertDialog(
+                                    content: Row(
+                                      children: [
+                                        CupertinoActivityIndicator(),
+                                        SizedBox(
+                                          width: 6,
+                                        ),
+                                        Text('Consultando datos espere..'),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }));
+
                           if (response.statusCode == 200) {
+                            Navigator.of(context).pop();
                             final responsecontratista =
                                 contratistaResponseFromMap(response.body);
                             setState(() {
@@ -92,6 +116,11 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                 });
                               }
                             }
+                            setState(() {
+                              totaltrabajadores = rosw.length - 1;
+                            });
+                          } else {
+                            Navigator.of(context).pop();
                           }
                         } catch (e) {}
                       },
@@ -185,11 +214,18 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        const Center(
-                          child: Text(
-                            'Trabajadores',
-                            style: TextStyle(fontSize: 16),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Trabajadores',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(totaltrabajadores.toString())
+                          ],
                         ),
                         const SizedBox(
                           height: 10,
@@ -215,9 +251,13 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Card(
-                                    elevation: 10,
+                                      horizontal: 10, vertical: 5),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: Colors.black12),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
@@ -271,8 +311,13 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                           width: 10,
                                         ),
                                         IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(
+                                            onPressed: () async {
+                                              setState(() {
+                                                rosw.remove(rosw[index]);
+                                                totaltrabajadores = -1;
+                                              });
+                                            },
+                                            icon: const Icon(
                                               Icons.delete,
                                               color: Colors.red,
                                             ))
@@ -291,19 +336,35 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                 horizontal: 20, vertical: 10),
                             child: MaterialButton(
                               color: Colors.green,
-                              onPressed: () {
+                              onPressed: () async {
                                 for (var i = 0; i <= rosw.length - 1; i++) {
                                   String rut = rosw[i + 1][0]!.value.toString();
                                   String nombre =
                                       rosw[i + 1][1]!.value.toString();
                                   String fecha_nacimiento =
                                       rosw[i + 1][2]!.value.toString();
-
+                                  String sexo =
+                                      rosw[i + 1][3]!.value.toString();
                                   String labor =
                                       rosw[i + 1][5]!.value.toString();
 
-                                  print(
-                                      'id $qr  el rut $rut nombre: $nombre fecha_nacimiento: $fecha_nacimiento labor: $labor');
+                                  TrabajadorContratista trabajador =
+                                      TrabajadorContratista(
+                                          idContratista: int.parse(qr),
+                                          nombre: nombre,
+                                          rut: rut,
+                                          sexo: sexo,
+                                          labor: labor);
+                                  http.Response response =
+                                      await controlAccesoProvider()
+                                          .saveaccesocontratista(trabajador);
+                                  if (response.statusCode != 200) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            'Error enviando registro de acceso');
+                                  }
+
+                                  Navigator.of(context).pop();
                                 }
                               },
                               child: const Text(

@@ -48,6 +48,7 @@ class Contratista {
   String? idarchivo;
 
 
+
   Contratista({
     this.id,
     this.idcompany,
@@ -86,4 +87,58 @@ class Contratista {
     "idarchivo": idarchivo,
 
   };
+
+
+
+}
+
+class TrabajadorContratista {
+  int? idContratista;
+
+  String? rut;
+  String? nombre;
+  String? labor;
+  String? sexo;
+  String? fechaIngreso;
+  String? horaIngreso;
+
+
+
+  TrabajadorContratista({
+    this.idContratista,
+    this.rut,
+    this.nombre,
+    this.labor,
+    this.sexo,
+    this.fechaIngreso,
+    this.horaIngreso,
+
+  });
+
+  factory TrabajadorContratista.fromMap(Map<String, dynamic> json) => TrabajadorContratista(
+    idContratista: json["id_contratista"],
+    rut: json["rut"],
+    nombre: json["nombre"],
+    labor: json["labor"],
+    sexo: json["sexo"],
+    fechaIngreso: json["fecha_ingreso"] ,
+    horaIngreso: json["hora_ingreso"] ,
+
+
+  );
+
+  Map<String, dynamic> toMap() => {
+    "id_contratista": idContratista,
+    "rut": rut,
+    "nombre": nombre,
+    "labor":labor,
+    "sexo":sexo,
+    "fecha_ingreso": fechaIngreso,
+    "hora_ingreso": horaIngreso,
+
+
+  };
+
+
+
 }

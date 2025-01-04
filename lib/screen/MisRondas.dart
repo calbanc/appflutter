@@ -128,7 +128,6 @@ class MisRondas extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-
                           SizedBox(
                             width: 50,
                             height: 80,

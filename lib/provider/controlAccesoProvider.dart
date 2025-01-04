@@ -15,6 +15,8 @@ import 'package:rondines/response/trabajadoresResponse.dart';
 import 'package:rondines/ui/general.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../response/contratistaResponse.dart';
+
 class controlAccesoProvider extends ChangeNotifier {
   GlobalKey<DropdownSearchState> formkeycuartel =
       GlobalKey<DropdownSearchState>();
@@ -365,7 +367,7 @@ class controlAccesoProvider extends ChangeNotifier {
     final Map<String, dynamic> data = {
       'idcliente': idclient,
       'rut': rutctrl.text,
-      'patente':patentectrl.text,
+      'patente': patentectrl.text,
       'fecha_ingreso': date,
       'hora_ingreso': time,
     };
@@ -431,8 +433,8 @@ class controlAccesoProvider extends ChangeNotifier {
     return response;
   }
 
-
-  Future<http.Response> getworkersaccesbydatereport(String idclient,String fecha) async {
+  Future<http.Response> getworkersaccesbydatereport(
+      String idclient, String fecha) async {
     String _endpoint = "/api/accesotrabajadores/getworkersaccesbydate";
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -441,6 +443,37 @@ class controlAccesoProvider extends ChangeNotifier {
     final Map<String, dynamic> data = {
       'idcliente': idclient,
       'fecha_ingreso': fecha
+    };
+    String parametros = json.encode(data);
+
+    final url = Uri.https(general().baseUrl, _endpoint);
+    Map<String, String> header = new Map();
+    header["content-type"] = "application/x-www-form-urlencoded";
+    header["Auth"] = token!;
+
+    final response = await http
+        .post(url, body: {"json": parametros}, headers: {"Auth": token!});
+
+    return response;
+  }
+
+  Future<http.Response> saveaccesocontratista(
+      TrabajadorContratista trabajador) async {
+    String _endpoint = "/api/accesocontratistas/save";
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final String? token = prefs.getString('token');
+    String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String time = DateFormat('HH:mm:ss').format(DateTime.now());
+
+    final Map<String, dynamic> data = {
+      'id_contratista': trabajador.idContratista,
+      'rut': trabajador.rut,
+      'nombre': trabajador.nombre,
+      'labor': trabajador.labor,
+      'sexo': trabajador.sexo,
+      'fecha_ingreso': date,
+      'hora_ingreso': time
     };
     String parametros = json.encode(data);
 
