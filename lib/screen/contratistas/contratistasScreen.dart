@@ -29,6 +29,8 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
   TextEditingController fechainicioctrl = TextEditingController(text: '');
   TextEditingController fechaterminoctrl = TextEditingController(text: '');
   TextEditingController observacionctrl = TextEditingController(text: '');
+  TextEditingController rutcontratistactrl = TextEditingController(text: '');
+  TextEditingController nombrecontratistactrl = TextEditingController(text: '');
   List<List<Data?>> rosw = [];
   String qr = '';
   int totaltrabajadores = 0;
@@ -98,6 +100,10 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                   .contratista![0].fechaInicio!;
                               fechaterminoctrl.text = responsecontratista
                                   .contratista![0].fechaTermino!;
+                              rutcontratistactrl.text = responsecontratista
+                                  .contratista![0].rutContratista!;
+                              nombrecontratistactrl.text = responsecontratista
+                                  .contratista![0].nombreContratista!;
                             });
                             final data = base64Decode(responsecontratista.xls!);
                             final directory =
@@ -133,6 +139,32 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                 ? Container(
                     child: Column(
                       children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TextFormField(
+                            controller: rutcontratistactrl,
+                            decoration: const InputDecoration(
+                                hintText: 'Rut Contratista',
+                                labelText: 'Rut Contratista',
+                                border: OutlineInputBorder()),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TextFormField(
+                            controller: nombrecontratistactrl,
+                            decoration: const InputDecoration(
+                                hintText: 'Nombre contratista',
+                                labelText: 'Nombre contratista',
+                                border: OutlineInputBorder()),
+                          ),
+                        ),
                         const SizedBox(
                           height: 10,
                         ),

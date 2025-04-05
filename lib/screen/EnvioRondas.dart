@@ -62,7 +62,9 @@ class EnvioRondas extends StatelessWidget {
                   String observacion=provider.listaguards[index].observacion!;
                   String punto=provider.listaguards[index].punto!;
                   String fecha=provider.listaguards[index].date!+" "+provider.listaguards[index].time!;
-
+                  String namefoto =
+                      provider.listaguards[index].date!.replaceAll("-", "") +
+                          provider.listaguards[index].time!.replaceAll(":", "");
                   int id=provider.listaguards[index].id!;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 5),
@@ -75,126 +77,172 @@ class EnvioRondas extends StatelessWidget {
                         )
                       ),
 
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Container(
+                                  height: 100,
+                                  width: 50,
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(1160),
+                                      child: Image.file(File(path))),),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Punto:$punto',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,fontFamily: 'PoppinsR'),),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width*0.6,
+                                      child: Text('Observacion:$observacion',maxLines: 20,style: TextStyle(fontFamily: 'PoppinsL'),)),
+                                  Text('Fecha:$fecha',style: TextStyle(fontSize: 15,fontFamily: 'PoppinsL'),),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(onPressed: ()async{
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Eliminar registro de ronda',style: TextStyle(fontFamily: 'PoppinsB'),),
+                                          content: const Text(
+                                              'Desea eliminar registro de ronda',style: TextStyle(fontFamily: 'PoppinsL')
+                                          ),
+                                          actions: <Widget>[
+                                            Column(
+                                              children: [
+                                                SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color.fromRGBO(255, 0, 0, 1),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                                                  ),
+                                                ),onPressed: ()async{
+                                                  await DBProvider.db.deleteronda(id);
+                                                  provider.getguardsavailable();
+                                                  Navigator.of(context).pop();
+
+                                                },child: Text('Eliminar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white),),),),
+                                                SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color.fromRGBO(36, 99, 174, 1),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                                                  ),
+                                                ),onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },child: Text('Cancelar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white)),),)
+                                              ],
+                                            )
+
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }, icon: Icon(Icons.cancel_outlined,color: Colors.red,)),
+                                  IconButton(onPressed: ()async{
+
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Actualizar registro de ronda',style: TextStyle(fontFamily: 'PoppinsB'),),
+                                          content:  Column(children: [
+                                            const Text('Desea actualizar registro de ronda',style: TextStyle(fontFamily: 'PoppinsL')),
+                                            TextFormField(
+                                              controller: provider.observacioneditController,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(9)),
+                                                labelText: 'Observacion',
+                                              ),)
+                                          ]
+
+                                          ),
+                                          actions: <Widget>[
+                                            Column(
+                                              children: [
+                                                SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color.fromRGBO(255, 0, 0, 1),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                                                  ),
+                                                ),onPressed: ()async{
+                                                  if(provider.observacioneditController.text.isNotEmpty){
+                                                    DBProvider.db.udpatecomentario(id, provider.observacioneditController.text);
+                                                    provider.getguardsavailable();
+                                                  }
+                                                  Navigator.of(context).pop();
+
+                                                },child: Text('Actualizar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white),),),),
+                                                SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color.fromRGBO(36, 99, 174, 1),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                                                  ),
+                                                ),onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },child: Text('Cancelar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white)),),)
+                                              ],
+                                            )
+
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                  }, icon: Icon(Icons.edit_outlined,color: Colors.blueAccent,))
+                                ],
+                              )
+
+                            ],
+                          ),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Container(
-                              height: 100,
-                              width: 50,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(1160),
-                                  child: Image.file(File(path))),),
+                            padding: const EdgeInsets.only(bottom: 10,left: 10,right: 10),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: MaterialButton(
+                                color: Colors.green,
+                                onPressed: ()async{
+
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      builder: ((context) {
+                                        return const Center(
+                                          child: AlertDialog(
+                                            content: Row(
+                                              children: [
+                                                CupertinoActivityIndicator(),
+                                                Text('Enviando Registro'),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }));
+                                  http.Response respuesta = await RondaProvider().uploadImage(path!, namefoto);
+                                  http.Response respuesta2 = await RondaProvider().sync(provider.listaguards[index]);
+                                  if (respuesta2.statusCode == 200) {
+                                    Navigator.of(context).pop();
+                                    final res = await DBProvider.db.updatesync(provider.listaguards[index].id!);
+                                    await provider.getguardsavailable();
+                                    await provider.getguardsends();
+                                    provider.currentindexsegment=1;
+                                  }else{
+                                    Navigator.of(context).pop();
+
+                                  }
+                                },
+                                child: const Text('ENVIAR REGISTRO',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+                              ),
+                            ),
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Punto:$punto',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,fontFamily: 'PoppinsR'),),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width*0.6,
-                                  child: Text('Observacion:$observacion',maxLines: 20,style: TextStyle(fontFamily: 'PoppinsL'),)),
-                              Text('Fecha:$fecha',style: TextStyle(fontSize: 15,fontFamily: 'PoppinsL'),),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              IconButton(onPressed: ()async{
-                                showDialog<void>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Eliminar registro de ronda',style: TextStyle(fontFamily: 'PoppinsB'),),
-                                      content: const Text(
-                                        'Desea eliminar registro de ronda',style: TextStyle(fontFamily: 'PoppinsL')
-                                      ),
-                                      actions: <Widget>[
-                                        Column(
-                                          children: [
-                                            SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color.fromRGBO(255, 0, 0, 1),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12), // <-- Radius
-                                              ),
-                                            ),onPressed: ()async{
-                                                await DBProvider.db.deleteronda(id);
-                                                provider.getguardsavailable();
-                                                Navigator.of(context).pop();
 
-                                            },child: Text('Eliminar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white),),),),
-                                            SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color.fromRGBO(36, 99, 174, 1),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12), // <-- Radius
-                                              ),
-                                            ),onPressed: (){
-                                              Navigator.of(context).pop();
-                                            },child: Text('Cancelar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white)),),)
-                                          ],
-                                        )
+                        ]
 
-                                      ],
-                                    );
-                                  },
-                                );
-                              }, icon: Icon(Icons.cancel_outlined,color: Colors.red,)),
-                              IconButton(onPressed: ()async{
-
-                                showDialog<void>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Actualizar registro de ronda',style: TextStyle(fontFamily: 'PoppinsB'),),
-                                      content:  Column(children: [
-                                          const Text('Desea actualizar registro de ronda',style: TextStyle(fontFamily: 'PoppinsL')),
-                                          TextFormField(
-                                            controller: provider.observacioneditController,
-                                            decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(9)),
-                                            labelText: 'Observacion',
-                                          ),)
-                                      ]
-
-                                      ),
-                                      actions: <Widget>[
-                                        Column(
-                                          children: [
-                                            SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color.fromRGBO(255, 0, 0, 1),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12), // <-- Radius
-                                              ),
-                                            ),onPressed: ()async{
-                                              if(provider.observacioneditController.text.isNotEmpty){
-                                                DBProvider.db.udpatecomentario(id, provider.observacioneditController.text);
-                                                provider.getguardsavailable();
-                                              }
-                                              Navigator.of(context).pop();
-
-                                            },child: Text('Actualizar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white),),),),
-                                            SizedBox(width: MediaQuery.of(context).size.width,child: ElevatedButton(  style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color.fromRGBO(36, 99, 174, 1),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12), // <-- Radius
-                                              ),
-                                            ),onPressed: (){
-                                              Navigator.of(context).pop();
-                                            },child: Text('Cancelar',style: TextStyle(fontFamily: 'PoppinsB',color: Colors.white)),),)
-                                          ],
-                                        )
-
-                                      ],
-                                    );
-                                  },
-                                );
-
-                              }, icon: Icon(Icons.edit_outlined,color: Colors.blueAccent,))
-                            ],
-                          )
-
-                        ],
                       ),
                     ),
                   );
