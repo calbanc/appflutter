@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -31,9 +32,17 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
   TextEditingController observacionctrl = TextEditingController(text: '');
   TextEditingController rutcontratistactrl = TextEditingController(text: '');
   TextEditingController nombrecontratistactrl = TextEditingController(text: '');
+
+  TextEditingController nombretrabajadorctrl = TextEditingController(text: '');
+  TextEditingController ruttrabajadorctrl = TextEditingController(text: '');
+  TextEditingController fechatrabajadorctrl = TextEditingController(text: '');
+  TextEditingController sexotrabajadorctrl = TextEditingController(text: 'M');
+  TextEditingController labortrabajadorctrl = TextEditingController(text: '');
+
   List<List<Data?>> rosw = [];
   String qr = '';
   int totaltrabajadores = 0;
+  List<TrabajadorContratista> trabajadoreslist = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +54,105 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
           style: TextStyle(color: Colors.white, fontFamily: 'PoppinsR'),
         ),
         centerTitle: true,
+        actions: [
+          encontrado
+              ? IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text(
+                              'Agregar trabajador',
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: ruttrabajadorctrl,
+                                  decoration: const InputDecoration(
+                                      hintText: 'Rut',
+                                      labelText: 'Rut',
+                                      border: OutlineInputBorder()),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextField(
+                                  controller: nombretrabajadorctrl,
+                                  decoration: const InputDecoration(
+                                      hintText: 'Nombre',
+                                      labelText: 'Nombre',
+                                      border: OutlineInputBorder()),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                DropdownSearch(
+                                  selectedItem: 'M',
+                                  onChanged: (value) =>
+                                      sexotrabajadorctrl.text = value!,
+                                  items: ['F', 'M'],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextField(
+                                  controller: fechatrabajadorctrl,
+                                  decoration: const InputDecoration(
+                                      hintText: 'Fecha Nacimiento',
+                                      labelText: 'Fecha Nacimiento',
+                                      border: OutlineInputBorder()),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                TextField(
+                                  controller: labortrabajadorctrl,
+                                  decoration: const InputDecoration(
+                                      hintText: 'Labor',
+                                      labelText: 'Labor',
+                                      border: OutlineInputBorder()),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                MaterialButton(
+                                  textColor: Colors.white,
+                                  color: Colors.blueAccent,
+                                  onPressed: () {
+                                    TrabajadorContratista trabajador =
+                                        TrabajadorContratista(
+                                            idContratista: int.parse(qr),
+                                            nombre: nombretrabajadorctrl.text,
+                                            rut: ruttrabajadorctrl.text,
+                                            fechaIngreso:
+                                                fechatrabajadorctrl.text,
+                                            sexo: sexotrabajadorctrl.text,
+                                            labor: labortrabajadorctrl.text);
+
+                                    setState(() {
+                                      trabajadoreslist.add(trabajador);
+                                      totaltrabajadores =
+                                          trabajadoreslist.length;
+                                      ruttrabajadorctrl.text = '';
+                                      nombretrabajadorctrl.text = '';
+                                      sexotrabajadorctrl.text = '';
+                                      fechatrabajadorctrl.text = '';
+                                      labortrabajadorctrl.text = '';
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Agregar Trabajador'),
+                                )
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                  icon: Icon(Icons.add))
+              : Container()
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -125,6 +233,29 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                             setState(() {
                               totaltrabajadores = rosw.length - 1;
                             });
+
+                            for (var i = 0; i <= rosw.length - 1; i++) {
+                              String rut = rosw[i + 1][0]!.value.toString();
+                              String nombre =
+                                  '${rosw[i + 1][1]!.value} ${rosw[i + 1][2]!.value}';
+
+                              String fecha_nacimiento =
+                                  rosw[i + 1][4]!.value.toString();
+                              String sexo = rosw[i + 1][3]!.value.toString();
+                              String labor = rosw[i + 1][5]!.value.toString();
+
+                              TrabajadorContratista trabajador =
+                                  TrabajadorContratista(
+                                      idContratista: int.parse(qr),
+                                      nombre: nombre,
+                                      rut: rut,
+                                      fechaIngreso: fecha_nacimiento,
+                                      sexo: sexo,
+                                      labor: labor);
+                              setState(() {
+                                trabajadoreslist.add(trabajador);
+                              });
+                            }
                           } else {
                             Navigator.of(context).pop();
                           }
@@ -266,21 +397,8 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                           width: MediaQuery.of(context).size.width,
                           height: 300,
                           child: ListView.builder(
-                              itemCount: rosw.length - 1,
+                              itemCount: trabajadoreslist.length,
                               itemBuilder: (context, index) {
-                                String rut =
-                                    rosw[index + 1][0]!.value.toString();
-                                String nombre =
-                                    rosw[index + 1][1]!.value.toString();
-                                String apellidos =
-                                    rosw[index + 1][2]!.value.toString();
-                                String sexo =
-                                    rosw[index + 1][3]!.value.toString();
-                                String fecha =
-                                    rosw[index + 1][4]!.value.toString();
-                                String labor =
-                                    rosw[index + 1][5]!.value.toString();
-
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 5),
@@ -307,32 +425,36 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: Text('Rut: $rut'),
+                                              child: Text(
+                                                  'Rut: ${trabajadoreslist[index].rut}'),
                                             ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
                                               child: Text(
-                                                  'Nombre y Apellido: $nombre $apellidos'),
+                                                  'Nombre y Apellido: ${trabajadoreslist[index].nombre} '),
                                             ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: Text('Sexo: $sexo'),
+                                              child: Text(
+                                                  'Sexo: ${trabajadoreslist[index].sexo}'),
                                             ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: Text('Fecha: $fecha'),
+                                              child: Text(
+                                                  'Fecha: ${trabajadoreslist[index].fechaIngreso}'),
                                             ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 8),
-                                              child: Text('Labor: $labor'),
+                                              child: Text(
+                                                  'Labor: ${trabajadoreslist[index].labor}'),
                                             ),
                                             const SizedBox(
                                               height: 10,
@@ -345,8 +467,10 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                         IconButton(
                                             onPressed: () async {
                                               setState(() {
-                                                rosw.remove(rosw[index]);
-                                                totaltrabajadores = -1;
+                                                trabajadoreslist.remove(
+                                                    trabajadoreslist[index]);
+                                                totaltrabajadores =
+                                                    totaltrabajadores - 1;
                                               });
                                             },
                                             icon: const Icon(
@@ -369,7 +493,16 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                             child: MaterialButton(
                               color: Colors.green,
                               onPressed: () async {
-                                for (var i = 0; i <= rosw.length - 1; i++) {
+                                trabajadoreslist.forEach((element) async {
+                                  http.Response response =
+                                      await controlAccesoProvider()
+                                          .saveaccesocontratista(element);
+                                  Fluttertoast.showToast(
+                                      msg: 'Datos registrados correctamente');
+                                });
+
+                                Navigator.of(context).pop();
+                                /*   for (var i = 0; i <= rosw.length - 1; i++) {
                                   String rut = rosw[i + 1][0]!.value.toString();
                                   String nombre =
                                       rosw[i + 1][1]!.value.toString();
@@ -397,7 +530,7 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                   }
 
                                   Navigator.of(context).pop();
-                                }
+                                } */
                               },
                               child: const Text(
                                 'REGISTRAR INGRESO',
