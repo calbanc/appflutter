@@ -15,7 +15,7 @@ class LoginProvider extends ChangeNotifier{
   String USERNAME='';
   String PASSWORD='';
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _isLoading; 
   bool _oscureText=true;
 
   bool get oscureText=>_oscureText;

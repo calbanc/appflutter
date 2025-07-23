@@ -11,6 +11,7 @@ import 'package:rondines/screen/controlacceso/control_acceso_form.dart';
 import 'package:rondines/screen/menu_screen.dart';
 import 'package:rondines/screen/registr_control.dart';
 import 'package:rondines/screen/screen.dart';
+import 'package:rondines/screen/supervision/mainSupervisionScreen.dart';
 import 'package:rondines/screen/trabajadores/mainReporteTrabajadoresScreen.dart';
 
 void main() {
@@ -49,6 +50,7 @@ class Myapp extends StatelessWidget {
         'asistencia': (_) => MainAsistencia(),
         'contratistas': (_) => MainContratistasScreen(),
         'addcontratista': (_) => ContratistasScreen(),
+        'supervision': (_) => mainSupervisionScreen(),
         'menu': (_) => MenuScreen(
               idrole: 0,
               idclient: 0,

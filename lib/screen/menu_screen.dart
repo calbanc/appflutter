@@ -267,6 +267,46 @@ class _MenuScreen extends StatelessWidget {
                     ),
 
                   ],
+                ),
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width*0.5,
+                      height: 200,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, 'supervision');
+                        },
+
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.deepPurpleAccent,
+                              elevation: 10,
+                              child: Column(
+
+                                children: [
+                                  const SizedBox(height: 20,),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: const FadeInImage(
+                                      width: 180,
+                                      height: 100,
+                                      image: AssetImage('assets/asistencia.png'),
+                                      placeholder: AssetImage('assets/segser.png'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10,),
+                                  const Text('SUPERVISION CAMPOS',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            )
+                        ),
+                      ),
+                    ),
+
+
+                  ],
                 )
 
 

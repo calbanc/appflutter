@@ -54,7 +54,7 @@ dependencies:
   syncfusion_flutter_datagrid: ^24.1.44
   syncfusion_flutter_datagrid_export: ^24.2.9
   syncfusion_flutter_pdf: ^24.2.9
-  file_picker: ^8.0.0+1
+  #file_picker: ^8.0.0+1
   cached_network_image: ^3.4.0
   flutter_cache_manager: ^3.4.1
   excel: ^4.0.2
