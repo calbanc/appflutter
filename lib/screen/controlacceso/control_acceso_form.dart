@@ -86,11 +86,13 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
   } 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Control de Acceso'),
+        title: Text('Control de Acceso',style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.blue,
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: GestureDetector(
               onTap: ()async{
                 showDialog(context: context, builder: ((context) {
@@ -107,10 +109,11 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                 String nombrefotoguia=fecha.replaceAll("/", "")+hora.replaceAll(":", "")+'guia';
                 String nombrefotofactura=fecha.replaceAll("/", "")+hora.replaceAll(":", "")+'fact';
                 String nombrefotoproducto=fecha.replaceAll("/", "")+hora.replaceAll(":", "")+'pro';
+                String nombrefototransporte=fecha.replaceAll("/", "")+hora.replaceAll(":", "")+'trans';
                 widget.provider.nombrefotoguia=nombrefotoguia;
                 widget.provider.nombrefotofactura=nombrefotofactura;
                 widget.provider.nombrefotoproducto=nombrefotoproducto;
-
+                widget.provider.nombrefototransporte=nombrefototransporte;
 
                 http.Response respuesta=await widget.provider.saveacceso(widget.provider);
                 Navigator.of(context, rootNavigator: true).pop();
@@ -128,9 +131,17 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                   widget.provider.imagepathguia!=''? await widget.provider.uploadImage(widget.provider.imagepathguia, nombrefotoguia): null;
                   widget.provider.imagepathfactura!='' ? await  widget.provider.uploadImage(widget.provider.imagepathfactura, nombrefotofactura):null;
                   widget.provider.imagepathproducto!='' ? await widget.provider.uploadImage(widget.provider.imagepathproducto,nombrefotoproducto):null;
+                  widget.provider.imagepathproducto!='' ? await widget.provider.uploadImage(widget.provider.imagepathproducto,nombrefototransporte):null;
 
 
                   Navigator.of(context, rootNavigator: true).pop();
+
+                  QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.success,
+                      title: 'Registro exitoso',
+                      text: 'Se ha registrado correctamente'
+                  );
 
 
                   Navigator.pushReplacementNamed(context, 'maincontrol');
@@ -146,7 +157,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                 
                 
               },
-              child: Text('Guardar',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),),
+              child: Text('Guardar',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
             ),
           )
         ],
@@ -279,7 +290,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Rut Visita',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
@@ -302,7 +313,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Nombre Visita',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
@@ -328,12 +339,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Motivo Visita',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -354,12 +365,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Patente Vehiculo',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -380,12 +391,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Patente Carro',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -406,12 +417,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Ingreso producto',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -432,12 +443,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Retira producto',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -458,12 +469,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Nro Guia',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -484,12 +495,12 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     labelText: 'Nro Factura',
                     // Set border for enabled state (default)
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.blue),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     // Set border for focused state
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(width: 3, color: Colors.green),
+                      borderSide: const BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(15),
                     )), 
                 ),
@@ -542,6 +553,24 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                   
                   ),
                 SizedBox(height:20),
+              Center(child: Text('Foto transporte')),
+              widget.provider.imagepathtransporte=='' ? Center():Center(
+                child: Image.file(
+                  File(widget.provider.imagepathtransporte),
+                  width: MediaQuery.of(context).size.width*0.4,
+                  height: MediaQuery.of(context).size.height*0.4,
+                ),
+              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width*0.9,
+                  child: ElevatedButton(
+
+                      onPressed: ()=>_showActionSheet(context, 'trasporte'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: Text('Foto transporte',style: styletext))
+
+              ),
+              SizedBox(height:20),
 
 
             ],

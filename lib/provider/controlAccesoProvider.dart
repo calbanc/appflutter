@@ -30,6 +30,7 @@ class controlAccesoProvider extends ChangeNotifier {
   TextEditingController patentectrl = TextEditingController();
   TextEditingController ingresoctrl = TextEditingController();
   TextEditingController idregistroctrl = TextEditingController();
+  TextEditingController observacionsalidactrl = TextEditingController();
   int idclient = 0;
 
   String rutvisita = '';
@@ -42,6 +43,7 @@ class controlAccesoProvider extends ChangeNotifier {
   String nombrefotoguia = '';
   String nombrefotofactura = '';
   String nombrefotoproducto = '';
+  String nombrefototransporte = '';
 
   int idzona = 0;
   String nguia = '';
@@ -49,6 +51,7 @@ class controlAccesoProvider extends ChangeNotifier {
   String _imagepathguia = '';
   String _imagepathfactura = '';
   String _imagepathproducto = '';
+  String _imagepathtransporte = '';
 
   String _nfc = '';
   String _qr = '';
@@ -87,6 +90,7 @@ class controlAccesoProvider extends ChangeNotifier {
   String get imagepathguia => _imagepathguia;
   String get imagepathfactura => _imagepathfactura;
   String get imagepathproducto => _imagepathproducto;
+  String get imagepathtransporte => _imagepathtransporte;
   List<Zona> _listzona = [];
   List<Zona> get listzona => _listzona;
 
@@ -122,7 +126,12 @@ class controlAccesoProvider extends ChangeNotifier {
   }
 
   set imagepathproducto(String value) {
+
     _imagepathproducto = value;
+    notifyListeners();
+  }
+  set imagepathtransporte(String value) {
+    _imagepathtransporte = value;
     notifyListeners();
   }
 
@@ -305,7 +314,7 @@ class controlAccesoProvider extends ChangeNotifier {
     return response;
   }
 
-  Future<http.Response> darsalida(int id) async {
+  Future<http.Response> darsalida(int id,String observacionsalida) async {
     String _endpoint = "/api/acceso/update";
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -318,7 +327,8 @@ class controlAccesoProvider extends ChangeNotifier {
     final Map<String, dynamic> data = {
       'ID': id,
       'FECHASALIDA': date,
-      'HORASALIDA': time
+      'HORASALIDA': time,
+      'OBSERVACIONSALIDA':observacionsalida
     };
     String parametros = json.encode(data);
 

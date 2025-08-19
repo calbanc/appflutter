@@ -32,8 +32,10 @@ class _MainControl extends StatelessWidget {
     final provider=Provider.of<controlAccesoProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Control de Acceso'),
+        title: const Text('Control de Acceso',style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.blue,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
         //  IconButton(onPressed: (){}, icon: Icon(Icons.filter_list_alt))
         ],
@@ -121,8 +123,8 @@ class _MainControl extends StatelessWidget {
           
                   Container(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height-50,
-                    
+                    height: MediaQuery.of(context).size.height*0.7,
+
                     child: ListView.builder(
                       itemCount: provider.listvisit.length,
                       itemBuilder: (context, index) {
@@ -156,6 +158,28 @@ class _MainControl extends StatelessWidget {
                                     child: Text('Fecha y hora: $date $hora'),
                                   ),
                                   const SizedBox(height: 10,),
+
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    child: TextFormField(
+                                      controller: provider.observacionsalidactrl,
+                                      decoration: InputDecoration(
+
+
+                                          labelText: 'Observacion salida',
+                                          // Set border for enabled state (default)
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(width: 1, color: Colors.black),
+                                            borderRadius: BorderRadius.circular(15),
+                                          ),
+                                          // Set border for focused state
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(width: 1, color: Colors.black),
+                                            borderRadius: BorderRadius.circular(15),
+                                          )),
+                                    ),
+                                  ),
+
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
@@ -176,7 +200,7 @@ class _MainControl extends StatelessWidget {
                                         child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                                             onPressed: ()async{
-                                                http.Response response=await provider.darsalida(id);
+                                                http.Response response=await provider.darsalida(id,provider.observacionsalidactrl.text);
                                                 if(response.statusCode==200){
                                                   QuickAlert.show(
                                                       context: context,
@@ -185,6 +209,8 @@ class _MainControl extends StatelessWidget {
                                                       text: 'Salida generada correctamente'
                                                   );
                                                   provider.listvisit.removeWhere((element) => element.id==id);
+
+                                                  provider.observacionsalidactrl.clear();
 
                                                 }
 
@@ -195,14 +221,14 @@ class _MainControl extends StatelessWidget {
                                       )
                                     ],
                                   )
-                                                
+
                                 ],
 
                               ),
                             ),
                           ),
                         );
-                      } 
+                      }
                       ),
                   ),
                   
