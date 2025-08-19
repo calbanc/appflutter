@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:flutter_excel/excel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:rondines/provider/provider.dart';
 import 'package:rondines/response/contratistaResponse.dart';
+import 'package:rondines/screen/common/utilitarios.dart';
 
 class ContratistasScreen extends StatefulWidget {
   const ContratistasScreen({super.key});
@@ -167,8 +168,7 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                       onPressed: () async {
                         try {
                           String barcodeScanRes =
-                              await FlutterBarcodeScanner.scanBarcode(
-                                  '#3D8BEF', 'Cancelar', false, ScanMode.QR);
+                              await Utilitarios().scanqr(context);
                           http.Response response = await controlAccesoProvider()
                               .getdatacontratista(barcodeScanRes);
 

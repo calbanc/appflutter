@@ -42,13 +42,13 @@ dependencies:
   intl: ^0.18.1
   jwt_decoder: ^2.0.1
   latlong2: ^0.9.0
-  nfc_manager: ^3.3.0
+  nfc_manager: ^4.0.2
   path_provider: ^2.0.14
   provider: ^6.0.5
   sqflite: ^2.2.6
   quickalert: ^1.0.2
   shared_preferences: ^2.1.2
-  flutter_barcode_scanner: ^2.0.0
+  
   flutter_excel: ^1.0.1
   libre_doc_converter: ^0.1.1
   syncfusion_flutter_datagrid: ^24.1.44
@@ -62,7 +62,9 @@ dependencies:
   fluttertoast: ^8.2.8
   internet_connection_checker_plus: ^2.5.2
   material_segmented_control: ^5.0.1
-
+  mobile_scanner: ^7.0.1
+  win32: ^5.1.1
+  nfc_manager_ndef: ^1.0.1
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

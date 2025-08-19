@@ -15,17 +15,19 @@ import 'package:rondines/screen/supervision/mainSupervisionScreen.dart';
 import 'package:rondines/screen/trabajadores/mainReporteTrabajadoresScreen.dart';
 
 void main() {
-  runApp(Myapp());
+  runApp(const Myapp());
 }
 
 class AppState extends StatelessWidget {
+  const AppState({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: ((context) => new LoginProvider())),
+        ChangeNotifierProvider(create: ((context) => LoginProvider())),
       ],
-      child: Myapp(),
+      child: const Myapp(),
     );
   }
 }
@@ -40,24 +42,24 @@ class Myapp extends StatelessWidget {
       title: 'SegSer',
       initialRoute: 'token',
       routes: {
-        'token': (_) => CheckTokenScreen(),
-        'login': (_) => LoginScreen(),
-        'ronda': (_) => Ronda_screen(),
-        'registra': (_) => RegistrControl(),
-        'scan': (_) => ScanScreen(),
-        'maincontrol': (_) => MainControl(),
-        'reporte': (_) => ReporteRondasScreen(),
-        'asistencia': (_) => MainAsistencia(),
-        'contratistas': (_) => MainContratistasScreen(),
-        'addcontratista': (_) => ContratistasScreen(),
-        'supervision': (_) => mainSupervisionScreen(),
-        'menu': (_) => MenuScreen(
+        'token': (_) => const CheckTokenScreen(),
+        'login': (_) => const LoginScreen(),
+        'ronda': (_) => const Ronda_screen(),
+        'registra': (_) => const RegistrControl(),
+        'scan': (_) => const ScanScreen(),
+        'maincontrol': (_) => const MainControl(),
+        'reporte': (_) => const ReporteRondasScreen(),
+        'asistencia': (_) => const MainAsistencia(),
+        'contratistas': (_) => const MainContratistasScreen(),
+        'addcontratista': (_) => const ContratistasScreen(),
+        'supervision': (_) => const mainSupervisionScreen(),
+        'menu': (_) => const MenuScreen(
               idrole: 0,
               idclient: 0,
             ),
-        'informe': (_) => InformeRondaScreen(),
-        'asistenciatrabajadores': (_) => MainTrabajadoresScreen(),
-        'reportetrabajadores': (_) => mainReporteTrabajadoresScreen()
+        'informe': (_) => const InformeRondaScreen(),
+        'asistenciatrabajadores': (_) => const MainTrabajadoresScreen(),
+        'reportetrabajadores': (_) => const mainReporteTrabajadoresScreen()
       },
       theme: ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.white),
     );

@@ -8,6 +8,7 @@ import 'package:hex/hex.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/nfc_manager_android.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:rondines/provider/provider.dart';
@@ -18,6 +19,8 @@ import '../response/getdatacode_Response.dart';
 import '../response/gettypeguardsbycompany_Response.dart';
 import 'EnvioRondas.dart';
 import 'MisRondas.dart';
+import 'dart:typed_data';
+import 'package:nfc_manager_ndef/nfc_manager_ndef.dart';
 
 class Ronda_screen extends StatelessWidget {
   const Ronda_screen({super.key});
@@ -307,11 +310,33 @@ class ScanScreen extends StatelessWidget {
                 bool respuesta=snapshot.data!;
                 if(respuesta){
                    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-                     Uint8List identifier= Uint8List.fromList(tag.data["nfca"]['identifier']);
-                     String nfc=HEX.encode(identifier);
-                          Navigator.pushReplacementNamed(context, 'registra', arguments: {"nfc":nfc.
-                          toUpperCase(),"tipo":tipo});
-                          });
+                     try {
+
+                       final nfcA = NfcAAndroid.from(tag); // ⚠️ Usa el tipo de tecnología
+
+                       final Uint8List? identifier = nfcA?.tag.id;
+
+                       if (identifier != null) {
+                         final uid = identifier
+                             .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+                             .join('')
+                             .toUpperCase();
+                              Navigator.pushReplacementNamed(context, 'registra', arguments: {"nfc":uid.
+                              toUpperCase(),"tipo":tipo});
+
+                       } else {
+
+                       }
+                     } catch (e) {
+                       print('error en $e');
+                     }
+
+
+
+
+                   
+
+                          }, pollingOptions:  {NfcPollingOption.iso14443}, );
                   return Container();
                 }else{
                   QuickAlert.show(

@@ -1,0 +1,2 @@
+/Users/rociovarillas/Documents/segser/segserappfinal/android/app/.cxx/Debug/644jws3x/x86/CMakeFiles/edit_cache.dir
+/Users/rociovarillas/Documents/segser/segserappfinal/android/app/.cxx/Debug/644jws3x/x86/CMakeFiles/rebuild_cache.dir

@@ -54,8 +54,11 @@ class AsistenciaTrabajadoresScreen extends StatelessWidget {
                 text: 'Acerque tarjeta de trabajador ');
 
             NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-              Uint8List identifier =
-                  Uint8List.fromList(tag.data["nfca"]['identifier']);
+              final data = tag.data as Map<String, dynamic>;
+final identifier = data['ndef']?['identifier'] ??
+                   data['mifareclassic']?['identifier'] ??
+                   data['nfca']?['identifier'] ??
+                   data['id'];
 
               provider.nfc = HEX.encode(identifier);
               Navigator.of(context).pop();
@@ -65,7 +68,7 @@ class AsistenciaTrabajadoresScreen extends StatelessWidget {
                       pageBuilder: (_, __, ___) =>
                           addAsistencia(provider: provider),
                       transitionDuration: const Duration(seconds: 3)));
-            });
+            },pollingOptions:  {NfcPollingOption.iso14443},);
           } else {
             QuickAlert.show(
                 context: context,
