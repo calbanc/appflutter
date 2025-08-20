@@ -7,6 +7,7 @@ import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/nfc_manager_android.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -54,13 +55,25 @@ class AsistenciaTrabajadoresScreen extends StatelessWidget {
                 text: 'Acerque tarjeta de trabajador ');
 
             NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-              final data = tag.data as Map<String, dynamic>;
-final identifier = data['ndef']?['identifier'] ??
-                   data['mifareclassic']?['identifier'] ??
-                   data['nfca']?['identifier'] ??
-                   data['id'];
 
-              provider.nfc = HEX.encode(identifier);
+              final nfcA = NfcAAndroid.from(tag); // ⚠️ Usa el tipo de tecnología
+
+              final Uint8List? identifier = nfcA?.tag.id;
+
+              if (identifier != null) {
+                final uid = identifier
+                    .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+                    .join('')
+                    .toUpperCase();
+                provider.nfc = uid.toUpperCase();
+
+
+              } else {
+
+              }
+
+
+
               Navigator.of(context).pop();
               Navigator.push(
                   context,

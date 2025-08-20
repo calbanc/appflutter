@@ -73,13 +73,6 @@ class MainRondaScreen extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
 class _Ronda_screen extends StatelessWidget {
   const _Ronda_screen({super.key});
 
@@ -331,10 +324,6 @@ class ScanScreen extends StatelessWidget {
                        print('error en $e');
                      }
 
-
-
-
-                   
 
                           }, pollingOptions:  {NfcPollingOption.iso14443}, );
                   return Container();
