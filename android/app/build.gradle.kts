@@ -21,13 +21,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.rondines"
+        applicationId = "com.devsoft.rondines"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 22
-        targetSdk = 34
-        versionCode = 16
-        versionName = "6.0.7"
+        targetSdk = 35
+        versionCode = 19
+        versionName = "9.0.0"
     }
 
     buildTypes {

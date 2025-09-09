@@ -31,6 +31,18 @@ class controlAccesoProvider extends ChangeNotifier {
   TextEditingController ingresoctrl = TextEditingController();
   TextEditingController idregistroctrl = TextEditingController();
   TextEditingController observacionsalidactrl = TextEditingController();
+  TextEditingController empresactrl = TextEditingController();
+  TextEditingController autorizadoctrl = TextEditingController();
+  TextEditingController tarjetactrl = TextEditingController();
+
+  bool _tarjeta = false;
+  bool get tarjeta => _tarjeta;
+
+  set tarjeta(bool value) {
+    _tarjeta = value;
+    notifyListeners();
+  }
+
   int idclient = 0;
 
   String rutvisita = '';
@@ -126,10 +138,10 @@ class controlAccesoProvider extends ChangeNotifier {
   }
 
   set imagepathproducto(String value) {
-
     _imagepathproducto = value;
     notifyListeners();
   }
+
   set imagepathtransporte(String value) {
     _imagepathtransporte = value;
     notifyListeners();
@@ -254,6 +266,9 @@ class controlAccesoProvider extends ChangeNotifier {
       'NOMBREFOTOGUIA': provider.nombrefotoguia,
       'NOMBREFOTOFACTURA': provider.nombrefotofactura,
       'NOMBREFOTOPRODUCTO': provider.nombrefotoproducto,
+      'EMPRESAVISITA': provider.empresactrl.text,
+      'AUTORIZADO': provider.autorizadoctrl.text,
+      'TARJETA': provider.tarjeta,
       'IDUSUER': iduser
     };
     String parametros = json.encode(data);
@@ -314,7 +329,7 @@ class controlAccesoProvider extends ChangeNotifier {
     return response;
   }
 
-  Future<http.Response> darsalida(int id,String observacionsalida) async {
+  Future<http.Response> darsalida(int id, String observacionsalida) async {
     String _endpoint = "/api/acceso/update";
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -328,7 +343,7 @@ class controlAccesoProvider extends ChangeNotifier {
       'ID': id,
       'FECHASALIDA': date,
       'HORASALIDA': time,
-      'OBSERVACIONSALIDA':observacionsalida
+      'OBSERVACIONSALIDA': observacionsalida
     };
     String parametros = json.encode(data);
 
