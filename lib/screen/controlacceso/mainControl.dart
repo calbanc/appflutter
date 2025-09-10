@@ -1,6 +1,7 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
@@ -18,7 +19,7 @@ class MainControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_)=>controlAccesoProvider(),
+      create: (_) => controlAccesoProvider(),
       child: _MainControl(),
     );
   }
@@ -29,214 +30,315 @@ class _MainControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider=Provider.of<controlAccesoProvider>(context);
+    final provider = Provider.of<controlAccesoProvider>(context);
+    final picker = new ImagePicker();
+    void _showActionSheet(outerContext, String id) {
+      showCupertinoModalPopup<void>(
+        context: outerContext,
+        useRootNavigator: true,
+        builder: (BuildContext sheetContext) => CupertinoActionSheet(
+          title: const Text('Opciones'),
+          actions: <CupertinoActionSheetAction>[
+            CupertinoActionSheetAction(
+              /// This parameter indicates the action would be a default
+              /// defualt behavior, turns the action's text to bold text.
+
+              onPressed: () async {
+                final PickedFile? pickedFile = await picker.getImage(
+                    source: ImageSource.camera, imageQuality: 80);
+                String path = '';
+                if (pickedFile != null) {
+                  path = pickedFile.path;
+                }
+                Navigator.pop(sheetContext);
+
+                QuickAlert.show(
+                  context: outerContext,
+                  type: QuickAlertType.loading,
+                  title: 'Enviando',
+                  text: 'Enviando imagen espere porfavor...',
+                );
+
+                String fecha = DateFormat('dd/MM/yyyy').format(DateTime.now());
+                String hora = DateFormat('HH:mm:ss').format(DateTime.now());
+                String nombrefotosalida = id +
+                    '_' +
+                    fecha.replaceAll("/", "") +
+                    hora.replaceAll(":", "");
+
+                http.Response response =
+                    await provider.uploadImage(path, nombrefotosalida);
+                if (response.statusCode == 200) {
+                  Navigator.of(outerContext, rootNavigator: true).pop();
+                  QuickAlert.show(
+                    context: outerContext,
+                    type: QuickAlertType.success,
+                    title: 'Enviado',
+                    text: 'Imagen enviada correctamente',
+                  );
+                } else {
+                  QuickAlert.show(
+                    context: outerContext,
+                    type: QuickAlertType.error,
+                    title: 'Error',
+                    text: 'Error al enviar imagen',
+                  );
+                }
+              },
+              child: const Text(
+                'Tomar Foto',
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
+            CupertinoActionSheetAction(
+              /// This parameter indicates the action would perform
+              /// a destructive action such as delete or exit and turns
+              /// the action's text color to red.
+              isDestructiveAction: true,
+              onPressed: () {
+                Navigator.pop(sheetContext);
+              },
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Control de Acceso',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Control de Acceso',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.blue,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-        //  IconButton(onPressed: (){}, icon: Icon(Icons.filter_list_alt))
+          //  IconButton(onPressed: (){}, icon: Icon(Icons.filter_list_alt))
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        child:const Icon(Icons.add,color: Colors.white,),
-        onPressed: (){
-           Navigator.push(context,
-             MaterialPageRoute(
-            builder: (context) =>  controlAccesoForm(provider: provider,)));
-          
-        }
-      ),
-      
-
-
+          backgroundColor: Colors.blue,
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => controlAccesoForm(
+                          provider: provider,
+                        )));
+          }),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        
-
         child: SingleChildScrollView(
           child: Column(children: [
-              FutureBuilder(
-                  future: provider.getclientes(), 
-                  builder: (context, snapshot)  {
-          
-                    if(!snapshot.hasData){
-                      return CupertinoActivityIndicator(); 
-                    }else{
-                      http.Response data=snapshot.data!;
-                      if(data.statusCode==200){
-                        final respuestab=ClientsbyCompanyResponse.fromJson(data.body);
-          
-                        List<Client>lista=respuestab.clientes;
-                         return Padding(
-                           padding:const  EdgeInsets.symmetric(vertical: 10,horizontal: 18),
-                           child: DropdownSearch<Client>(
-                              validator: (value)  {
-                                return (value == null)
-                                      ? 'Debe seleccionar cliente'
-                                      : null;
-                              },
-                              popupProps: const PopupProps.dialog(
-                                  title: Text('Seleccione cliente'),
-                                  showSearchBox: true,
-                                  isFilterOnline: true),
-                              items: lista!,
-                              itemAsString: (Client u) =>
-                                                  u.name!,
-          
-                              dropdownDecoratorProps:  DropDownDecoratorProps(
-                                dropdownSearchDecoration: InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(width: 1),
-                                         borderRadius: BorderRadius.circular(15),
-                                        ),
-                                    labelText: "Seleccione Cliente"),
-                              ),
-                              onChanged: (Client? value) async {
-                                provider.idclientb=value!.id;
-                                
-            //                            obtenerzonasporcliente(value!.id);
+            FutureBuilder(
+                future: provider.getclientes(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CupertinoActivityIndicator();
+                  } else {
+                    http.Response data = snapshot.data!;
+                    if (data.statusCode == 200) {
+                      final respuestab =
+                          ClientsbyCompanyResponse.fromJson(data.body);
 
-                                http.Response respuesta=await provider.getvisits(value.id!);
-                                if(respuesta.statusCode==200){
-                                    VisitByclientResponse response=VisitByclientResponse.fromJson(respuesta.body);
-                                    provider.listvisit=response.data!;
-          
-                                  
-                                }
-                                
-                              },
-          
-          
-                            ),
-                         );
-                      }else{
-                          return Container();                        
-                      }
-                      
-                    }
-                  }), 
-          
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height*0.7,
-
-                    child: ListView.builder(
-                      itemCount: provider.listvisit.length,
-                      itemBuilder: (context, index) {
-                        String rutvisita=provider.listvisit[index].rutvisita!;
-                        String nombrevisita=provider.listvisit[index].nombrevisita!;
-                        String patente=provider.listvisit[index].patentevehiculo!;
-                        String motivo=provider.listvisit[index].motivovisita!;
-                        DateTime fecha=provider.listvisit[index].fechaingreso!;
-                        String hora=provider.listvisit[index].horaingreso!;
-                        String date=DateFormat('dd-MM-yyyy').format(fecha);
-                        int id=provider.listvisit[index].id!;
-                        return GestureDetector(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 10,),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    child: Text('Visita:  $rutvisita - $nombrevisita'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
-                                    child: Text('Motivo: $motivo'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    child: Text('Fecha y hora: $date $hora'),
-                                  ),
-                                  const SizedBox(height: 10,),
-
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    child: TextFormField(
-                                      controller: provider.observacionsalidactrl,
-                                      decoration: InputDecoration(
-
-
-                                          labelText: 'Observacion salida',
-                                          // Set border for enabled state (default)
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(width: 1, color: Colors.black),
-                                            borderRadius: BorderRadius.circular(15),
-                                          ),
-                                          // Set border for focused state
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(width: 1, color: Colors.black),
-                                            borderRadius: BorderRadius.circular(15),
-                                          )),
-                                    ),
-                                  ),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-
-                                            onPressed: ()async{
-
-
-
-                                            }, child: Text('Eliminar',style: TextStyle(color: Colors.white),)
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                            onPressed: ()async{
-                                                http.Response response=await provider.darsalida(id,provider.observacionsalidactrl.text);
-                                                if(response.statusCode==200){
-                                                  QuickAlert.show(
-                                                      context: context,
-                                                      type: QuickAlertType.success,
-                                                      title: 'Salida',
-                                                      text: 'Salida generada correctamente'
-                                                  );
-                                                  provider.listvisit.removeWhere((element) => element.id==id);
-
-                                                  provider.observacionsalidactrl.clear();
-
-                                                }
-
-
-
-                                            }, child: Text('DAR SALIDA',style: TextStyle(color: Colors.white),)
-                                        ),
-                                      )
-                                    ],
-                                  )
-
-                                ],
-
-                              ),
-                            ),
+                      List<Client> lista = respuestab.clientes;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 18),
+                        child: DropdownSearch<Client>(
+                          validator: (value) {
+                            return (value == null)
+                                ? 'Debe seleccionar cliente'
+                                : null;
+                          },
+                          popupProps: const PopupProps.dialog(
+                              title: Text('Seleccione cliente'),
+                              showSearchBox: true,
+                              isFilterOnline: true),
+                          items: lista!,
+                          itemAsString: (Client u) => u.name!,
+                          dropdownDecoratorProps: DropDownDecoratorProps(
+                            dropdownSearchDecoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 1),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                labelText: "Seleccione Cliente"),
                           ),
-                        );
-                      }
+                          onChanged: (Client? value) async {
+                            provider.idclientb = value!.id;
+
+                            //                            obtenerzonasporcliente(value!.id);
+
+                            http.Response respuesta =
+                                await provider.getvisits(value.id!);
+                            if (respuesta.statusCode == 200) {
+                              VisitByclientResponse response =
+                                  VisitByclientResponse.fromJson(
+                                      respuesta.body);
+                              provider.listvisit = response.data!;
+                            }
+                          },
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }
+                }),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: ListView.builder(
+                  itemCount: provider.listvisit.length,
+                  itemBuilder: (context, index) {
+                    String rutvisita = provider.listvisit[index].rutvisita!;
+                    String nombrevisita =
+                        provider.listvisit[index].nombrevisita!;
+                    String patente = provider.listvisit[index].patentevehiculo!;
+                    String motivo = provider.listvisit[index].motivovisita!;
+                    DateTime fecha = provider.listvisit[index].fechaingreso!;
+                    String hora = provider.listvisit[index].horaingreso!;
+                    String date = DateFormat('dd-MM-yyyy').format(fecha);
+
+                    int id = provider.listvisit[index].id!;
+                    return GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child:
+                                    Text('Visita:  $rutvisita - $nombrevisita'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                child: Text('Motivo: $motivo'),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text('Fecha y hora: $date $hora'),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue),
+                                      onPressed: () async {
+                                        _showActionSheet(
+                                            context, id.toString());
+                                      },
+                                      child: const Text(
+                                        'Tomar fotografia',
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: TextFormField(
+                                  controller: provider.observacionsalidactrl,
+                                  decoration: InputDecoration(
+                                      labelText: 'Observacion salida',
+                                      // Set border for enabled state (default)
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(
+                                            width: 1, color: Colors.black),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      // Set border for focused state
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(
+                                            width: 1, color: Colors.black),
+                                        borderRadius: BorderRadius.circular(15),
+                                      )),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red),
+                                        onPressed: () async {},
+                                        child: const Text(
+                                          'Eliminar',
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.green),
+                                        onPressed: () async {
+                                          http.Response response =
+                                              await provider.darsalida(
+                                                  id,
+                                                  provider.observacionsalidactrl
+                                                      .text);
+                                          if (response.statusCode == 200) {
+                                            QuickAlert.show(
+                                                context: context,
+                                                type: QuickAlertType.success,
+                                                title: 'Salida',
+                                                text:
+                                                    'Salida generada correctamente');
+                                            provider.listvisit.removeWhere(
+                                                (element) => element.id == id);
+
+                                            provider.observacionsalidactrl
+                                                .clear();
+                                          }
+                                        },
+                                        child: const Text(
+                                          'DAR SALIDA',
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                  ),
-                  
-          
-          
-          
+                    );
+                  }),
+            ),
           ]),
-        ) ,
+        ),
       ),
     );
   }

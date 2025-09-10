@@ -502,35 +502,6 @@ class _ContratistasScreenState extends State<ContratistasScreen> {
                                 });
 
                                 Navigator.of(context).pop();
-                                /*   for (var i = 0; i <= rosw.length - 1; i++) {
-                                  String rut = rosw[i + 1][0]!.value.toString();
-                                  String nombre =
-                                      rosw[i + 1][1]!.value.toString();
-                                  String fecha_nacimiento =
-                                      rosw[i + 1][2]!.value.toString();
-                                  String sexo =
-                                      rosw[i + 1][3]!.value.toString();
-                                  String labor =
-                                      rosw[i + 1][5]!.value.toString();
-
-                                  TrabajadorContratista trabajador =
-                                      TrabajadorContratista(
-                                          idContratista: int.parse(qr),
-                                          nombre: nombre,
-                                          rut: rut,
-                                          sexo: sexo,
-                                          labor: labor);
-                                  http.Response response =
-                                      await controlAccesoProvider()
-                                          .saveaccesocontratista(trabajador);
-                                  if (response.statusCode != 200) {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'Error enviando registro de acceso');
-                                  }
-
-                                  Navigator.of(context).pop();
-                                } */
                               },
                               child: const Text(
                                 'REGISTRAR INGRESO',

@@ -274,7 +274,7 @@ class controlAccesoProvider extends ChangeNotifier {
     String parametros = json.encode(data);
 
     final url = Uri.https(general().baseUrl, _endpoint);
-
+    print(parametros);
     Map<String, String> header = new Map();
     header["content-type"] = "application/x-www-form-urlencoded";
     header["Auth"] = token!;

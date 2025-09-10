@@ -660,7 +660,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green),
                       child: Text('Foto transporte', style: styletext))),
-              SizedBox(height: 20),
+              SizedBox(height: 40),
             ],
           ),
         ),
