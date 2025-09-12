@@ -49,11 +49,15 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                 final PickedFile? pickedFile = await picker.getImage(
                     source: ImageSource.camera, imageQuality: 100);
                 if (pickedFile != null) {
-                  tipo == 'guia'
-                      ? widget.provider.imagepathguia = pickedFile.path
-                      : tipo == 'producto'
-                          ? widget.provider.imagepathproducto = pickedFile.path
-                          : widget.provider.imagepathfactura = pickedFile.path;
+                  if (tipo == 'guia') {
+                    widget.provider.imagepathguia = pickedFile.path;
+                  } else if (tipo == 'producto') {
+                    widget.provider.imagepathproducto = pickedFile.path;
+                  } else if (tipo == 'factura') {
+                    widget.provider.imagepathfactura = pickedFile.path;
+                  } else if (tipo == 'transporte') {
+                    widget.provider.imagepathtransporte = pickedFile.path;
+                  }
                 }
 
                 Navigator.pop(context);
@@ -170,7 +174,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                       : null;
                   widget.provider.imagepathproducto != ''
                       ? await widget.provider.uploadImage(
-                          widget.provider.imagepathproducto,
+                          widget.provider.imagepathtransporte,
                           nombrefototransporte)
                       : null;
 
@@ -656,7 +660,7 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
               SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: ElevatedButton(
-                      onPressed: () => _showActionSheet(context, 'trasporte'),
+                      onPressed: () => _showActionSheet(context, 'transporte'),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green),
                       child: Text('Foto transporte', style: styletext))),

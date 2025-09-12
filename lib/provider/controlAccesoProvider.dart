@@ -266,6 +266,7 @@ class controlAccesoProvider extends ChangeNotifier {
       'NOMBREFOTOGUIA': provider.nombrefotoguia,
       'NOMBREFOTOFACTURA': provider.nombrefotofactura,
       'NOMBREFOTOPRODUCTO': provider.nombrefotoproducto,
+      'NOMBREFOTOTRANSPORTE': provider.nombrefototransporte,
       'EMPRESAVISITA': provider.empresactrl.text,
       'AUTORIZADO': provider.autorizadoctrl.text,
       'TARJETA': provider.tarjeta,
