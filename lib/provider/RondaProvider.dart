@@ -234,6 +234,9 @@ class RondaProvider extends ChangeNotifier {
       "ISOK": provider.cumple == 'Si' ? '1' : '0',
       "IDIMAGE": provider.imagename,
       "TYPEPOINT": provider.tipo,
+
+
+      
     };
     String parametros = json.encode(data);
 
