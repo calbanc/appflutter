@@ -31,6 +31,9 @@ class controlAccesoProvider extends ChangeNotifier {
   TextEditingController ingresoctrl = TextEditingController();
   TextEditingController idregistroctrl = TextEditingController();
   TextEditingController observacionsalidactrl = TextEditingController();
+  TextEditingController empresavisitactrl= TextEditingController();
+  TextEditingController tarjetactrl=TextEditingController();
+  TextEditingController autorizadoctrl=TextEditingController();
   int idclient = 0;
 
   String rutvisita = '';
@@ -254,6 +257,10 @@ class controlAccesoProvider extends ChangeNotifier {
       'NOMBREFOTOGUIA': provider.nombrefotoguia,
       'NOMBREFOTOFACTURA': provider.nombrefotofactura,
       'NOMBREFOTOPRODUCTO': provider.nombrefotoproducto,
+      'NOMBREFOTOTRANSPORTE':provider.nombrefototransporte,
+      'AUTORIZADO':provider.autorizadoctrl.text,
+      'EMPRESAVISITA':provider.empresavisitactrl.text,
+      'TARJETA':provider.tarjetactrl.text,
       'IDUSUER': iduser
     };
     String parametros = json.encode(data);

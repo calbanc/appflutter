@@ -505,6 +505,78 @@ class _controlAccesoFormState extends State<controlAccesoForm> {
                     )), 
                 ),
               ),
+              Padding(
+                padding:  EdgeInsets.symmetric(vertical: 10,horizontal: 18),
+                child: TextFormField(
+                  controller: widget.provider.autorizadoctrl,
+                  decoration: InputDecoration(
+                    /* errorText: 'Debe ingresar una observacion',
+                    errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 3, color: Colors.red),
+                      borderRadius: BorderRadius.circular(15),
+                    ), */
+
+                      labelText: 'Autorizado por',
+                      // Set border for enabled state (default)
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      // Set border for focused state
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      )),
+                ),
+              ),
+              Padding(
+                padding:  EdgeInsets.symmetric(vertical: 10,horizontal: 18),
+                child: TextFormField(
+                  controller: widget.provider.tarjetactrl,
+                  decoration: InputDecoration(
+                    /* errorText: 'Debe ingresar una observacion',
+                    errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 3, color: Colors.red),
+                      borderRadius: BorderRadius.circular(15),
+                    ), */
+
+                      labelText: 'Tarjeta',
+                      // Set border for enabled state (default)
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      // Set border for focused state
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      )),
+                ),
+              ),
+              Padding(
+                padding:  EdgeInsets.symmetric(vertical: 10,horizontal: 18),
+                child: TextFormField(
+                  controller: widget.provider.empresavisitactrl,
+                  decoration: InputDecoration(
+                    /* errorText: 'Debe ingresar una observacion',
+                    errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 3, color: Colors.red),
+                      borderRadius: BorderRadius.circular(15),
+                    ), */
+
+                      labelText: 'Empresa visita ',
+                      // Set border for enabled state (default)
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      // Set border for focused state
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(15),
+                      )),
+                ),
+              ),
               Center(child: Text('Foto guia')),
               widget.provider.imagepathguia=='' ? Center():Center(
                           child: Image.file(
